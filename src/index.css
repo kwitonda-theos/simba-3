@@ -407,13 +407,13 @@ ul, ol {
   background: var(--bg-primary);
   border-bottom: 1px solid var(--border-color);
   padding: var(--space-sm) 0;
-  overflow-x: auto;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  overflow: hidden;
 }
 
-.category-nav::-webkit-scrollbar {
-  display: none;
+.category-scroll-wrapper {
+  display: flex;
+  overflow: hidden;
+  width: 100%;
 }
 
 .category-nav-list {
@@ -422,6 +422,21 @@ ul, ol {
   gap: var(--space-sm);
   white-space: nowrap;
   padding: 4px 0;
+  flex-shrink: 0;
+  padding-right: var(--space-sm);
+}
+
+.category-nav-list.marquee-anim {
+  animation: marquee 35s linear infinite;
+}
+
+.category-scroll-wrapper:hover .marquee-anim {
+  animation-play-state: paused;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
 }
 
 .category-nav-item {
