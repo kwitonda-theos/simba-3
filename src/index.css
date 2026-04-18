@@ -225,6 +225,7 @@ ul, ol {
 .header-main {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: var(--space-lg);
   padding: var(--space-md) 0;
 }
@@ -308,6 +309,7 @@ ul, ol {
   align-items: center;
   gap: var(--space-md);
   flex-shrink: 0;
+  margin-left: auto;
 }
 
 .header-action-btn {
