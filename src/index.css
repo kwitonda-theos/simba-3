@@ -480,6 +480,15 @@ ul, ol {
   border-radius: 50%;
 }
 
+[data-theme="dark"] .hero {
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 50%, rgba(255, 107, 0, 0.2) 100%);
+}
+
+[data-theme="dark"] .hero::before,
+[data-theme="dark"] .hero::after {
+  background: radial-gradient(circle, rgba(255, 107, 0, 0.08) 0%, transparent 70%);
+}
+
 .hero-content {
   position: relative;
   z-index: 1;
