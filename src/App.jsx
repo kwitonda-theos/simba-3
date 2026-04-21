@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
 import { LanguageProvider } from './context/LanguageContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import Header from './components/Header';
 import CartDrawer from './components/CartDrawer';
 import Footer from './components/Footer';
@@ -11,6 +12,12 @@ import HomePage from './pages/HomePage';
 import CategoryPage from './pages/CategoryPage';
 import ProductPage from './pages/ProductPage';
 import CheckoutPage from './pages/CheckoutPage';
+import LoginPage from './pages/LoginPage';
+import SignupChoicePage from './pages/SignupChoicePage';
+import CustomerSignupPage from './pages/CustomerSignupPage';
+import BranchManagerSignupPage from './pages/BranchManagerSignupPage';
+import BranchDashboard from './pages/BranchDashboard';
+import MyOrdersPage from './pages/MyOrdersPage';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -46,6 +53,7 @@ function BackToTop() {
 function AppContent() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { isBranchManager, user } = useAuth();
 
   useEffect(() => {
     fetch('/simba_products.json')
@@ -84,24 +92,48 @@ function AppContent() {
       <ToastContainer />
 
       <main>
-        <Routes>
-          <Route
-            path="/"
-            element={<HomePage products={products} categories={categories} />}
-          />
-          <Route
-            path="/category/:categoryName"
-            element={<CategoryPage products={products} categories={categories} />}
-          />
-          <Route
-            path="/product/:productId"
-            element={<ProductPage products={products} />}
-          />
-          <Route
-            path="/checkout"
-            element={<CheckoutPage />}
-          />
-        </Routes>
+        {isBranchManager ? (
+          <BranchDashboard products={products} categories={categories} />
+        ) : (
+          <Routes>
+            <Route
+              path="/"
+              element={<HomePage products={products} categories={categories} />}
+            />
+            <Route
+              path="/category/:categoryName"
+              element={<CategoryPage products={products} categories={categories} />}
+            />
+            <Route
+              path="/product/:productId"
+              element={<ProductPage products={products} />}
+            />
+            <Route
+              path="/checkout"
+              element={<CheckoutPage />}
+            />
+            <Route
+              path="/login"
+              element={<LoginPage />}
+            />
+            <Route
+              path="/signup"
+              element={<SignupChoicePage />}
+            />
+            <Route
+              path="/signup/customer"
+              element={<CustomerSignupPage />}
+            />
+            <Route
+              path="/signup/branch-manager"
+              element={<BranchManagerSignupPage />}
+            />
+            <Route
+              path="/my-orders"
+              element={<MyOrdersPage />}
+            />
+          </Routes>
+        )}
       </main>
 
       <Footer />
@@ -115,9 +147,11 @@ export default function App() {
     <BrowserRouter>
       <ThemeProvider>
         <LanguageProvider>
-          <CartProvider>
-            <AppContent />
-          </CartProvider>
+          <AuthProvider>
+            <CartProvider>
+              <AppContent />
+            </CartProvider>
+          </AuthProvider>
         </LanguageProvider>
       </ThemeProvider>
     </BrowserRouter>

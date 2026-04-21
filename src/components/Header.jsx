@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
 
 export default function Header({ onSearch }) {
   const [searchQuery, setSearchQuery] = useState('');
   const { getCartCount, setIsCartOpen } = useCart();
+  const { isAuthenticated, user, logout, isBranchManager } = useAuth();
   const { language, setLanguage, t } = useLanguage();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
@@ -83,6 +85,29 @@ export default function Header({ onSearch }) {
             >
               {theme === 'dark' ? '🌙' : '☀️'}
             </button>
+
+            {isAuthenticated ? (
+              <div className="user-nav" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', marginRight: '8px' }}>
+                  <span style={{ fontSize: '13px', fontWeight: 700 }}>Hi, {user.name}</span>
+                  {!isBranchManager && (
+                    <Link to="/my-orders" style={{ fontSize: '11px', color: 'var(--primary)', fontWeight: 600 }}>My Orders</Link>
+                  )}
+                </div>
+                <button
+                  className="header-action-btn"
+                  onClick={() => logout()}
+                  title="Logout"
+                >
+                  🚪
+                </button>
+              </div>
+            ) : (
+              <Link to="/login" className="header-action-btn" id="login-btn">
+                👤 <span>{t('login') || 'Login'}</span>
+              </Link>
+            )}
+
             <button
               className="header-action-btn"
               onClick={() => setIsCartOpen(true)}

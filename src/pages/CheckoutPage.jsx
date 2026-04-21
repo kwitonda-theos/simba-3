@@ -1,18 +1,35 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate, Navigate, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { formatPrice, generateOrderNumber } from '../utils/helpers';
 
+const BRANCHES = [
+  "Simba Centenary",
+  "Simba Gishushu",
+  "Simba Kimironko",
+  "Simba Kicukiro",
+  "Simba Kigali Height",
+  "Simba UTC",
+  "Simba Gacuriro",
+  "Simba Gikondo",
+  "Simba sonatube",
+  "Simba Kisimenti",
+  "Simba Rebero"
+];
+
 export default function CheckoutPage() {
   const { cart, getCartTotal, clearCart } = useCart();
+  const { isAuthenticated, user } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
+    firstName: user?.name?.split(' ')[0] || '',
+    lastName: user?.name?.split(' ')[1] || '',
+    email: user?.email || '',
     phone: '',
     address: '',
     city: 'Kigali',
@@ -20,14 +37,34 @@ export default function CheckoutPage() {
     notes: '',
     paymentMethod: 'momo-mtn',
     momoNumber: '',
+    cardNumber: '',
+    cardExpiry: '',
+    cardCvv: '',
+    cardName: '',
+    pickupBranch: '',
   });
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [orderNumber, setOrderNumber] = useState('');
 
+  useEffect(() => {
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        firstName: user.name?.split(' ')[0] || '',
+        lastName: user.name?.split(' ')[1] || '',
+        email: user.email || '',
+      }));
+    }
+  }, [user]);
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
   const total = getCartTotal();
-  const deliveryFee = total >= 50000 ? 0 : 2000;
+  const deliveryFee = formData.pickupBranch ? 0 : (total >= 50000 ? 0 : 2000);
 
   const handleChange = (e) => {
     setFormData(prev => ({
@@ -43,6 +80,28 @@ export default function CheckoutPage() {
     // Simulate payment processing
     setTimeout(() => {
       const number = generateOrderNumber();
+      
+      // Save order to localStorage for simulation
+      const newOrder = {
+        id: number,
+        orderNumber: number,
+        customerName: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email,
+        items: [...cart],
+        total: total + deliveryFee,
+        status: 'Pending',
+        date: new Date().toISOString(),
+        pickupBranch: formData.pickupBranch,
+        paymentMethod: formData.paymentMethod,
+      };
+
+      try {
+        const existingOrders = JSON.parse(localStorage.getItem('simba-orders') || '[]');
+        localStorage.setItem('simba-orders', JSON.stringify([newOrder, ...existingOrders]));
+      } catch (err) {
+        console.error('Failed to save order:', err);
+      }
+
       setOrderNumber(number);
       setOrderPlaced(true);
       setIsProcessing(false);
@@ -205,6 +264,22 @@ export default function CheckoutPage() {
                     </select>
                   </div>
                   <div className="form-group full-width">
+                    <label className="form-label">{t('pickupBranch') || 'Pickup Branch'}</label>
+                    <select
+                      className="form-input"
+                      name="pickupBranch"
+                      value={formData.pickupBranch}
+                      onChange={handleChange}
+                      required
+                      id="input-branch"
+                    >
+                      <option value="">Select Branch for Pickup</option>
+                      {BRANCHES.map(branch => (
+                        <option key={branch} value={branch}>{branch}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="form-group full-width">
                     <label className="form-label">{t('notes')}</label>
                     <textarea
                       className="form-input"
@@ -280,6 +355,23 @@ export default function CheckoutPage() {
                       <div className="payment-option-desc">{t('cashDeliveryDesc')}</div>
                     </div>
                   </div>
+
+                  <div
+                    className={`payment-option ${formData.paymentMethod === 'credit-card' ? 'selected' : ''}`}
+                    onClick={() => setFormData(prev => ({ ...prev, paymentMethod: 'credit-card' }))}
+                    id="payment-card"
+                  >
+                    <div className="payment-option-radio" />
+                    <div className="payment-option-icon">💳</div>
+                    <div className="payment-option-info">
+                      <div className="payment-option-name">{t('creditCard')}</div>
+                      <div className="payment-option-desc">{t('creditCardDesc')}</div>
+                    </div>
+                    <div className="card-brands">
+                      <span className="card-brand visa">VISA</span>
+                      <span className="card-brand mastercard">MC</span>
+                    </div>
+                  </div>
                 </div>
 
                 {(formData.paymentMethod === 'momo-mtn' || formData.paymentMethod === 'momo-airtel') && (
@@ -295,6 +387,98 @@ export default function CheckoutPage() {
                       required
                       id="input-momo"
                     />
+                  </div>
+                )}
+
+                {formData.paymentMethod === 'credit-card' && (
+                  <div className="card-form" style={{ marginTop: '16px' }}>
+                    <div className="card-form-visual">
+                      <div className="card-chip"></div>
+                      <div className="card-number-display">
+                        {formData.cardNumber || '•••• •••• •••• ••••'}
+                      </div>
+                      <div className="card-visual-bottom">
+                        <div>
+                          <div className="card-visual-label">{t('cardName')}</div>
+                          <div className="card-visual-value">{formData.cardName || '---'}</div>
+                        </div>
+                        <div>
+                          <div className="card-visual-label">{t('cardExpiry')}</div>
+                          <div className="card-visual-value">{formData.cardExpiry || 'MM/YY'}</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label">{t('cardNumber')}</label>
+                      <input
+                        type="text"
+                        className="form-input"
+                        name="cardNumber"
+                        value={formData.cardNumber}
+                        onChange={(e) => {
+                          let val = e.target.value.replace(/\D/g, '').slice(0, 16);
+                          val = val.replace(/(\d{4})(?=\d)/g, '$1 ');
+                          setFormData(prev => ({ ...prev, cardNumber: val }));
+                        }}
+                        placeholder="1234 5678 9012 3456"
+                        required
+                        maxLength={19}
+                        id="input-card-number"
+                      />
+                    </div>
+                    <div className="card-form-row">
+                      <div className="form-group">
+                        <label className="form-label">{t('cardExpiry')}</label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          name="cardExpiry"
+                          value={formData.cardExpiry}
+                          onChange={(e) => {
+                            let val = e.target.value.replace(/\D/g, '').slice(0, 4);
+                            if (val.length >= 3) val = val.slice(0, 2) + '/' + val.slice(2);
+                            setFormData(prev => ({ ...prev, cardExpiry: val }));
+                          }}
+                          placeholder="MM/YY"
+                          required
+                          maxLength={5}
+                          id="input-card-expiry"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label className="form-label">{t('cardCvv')}</label>
+                        <input
+                          type="password"
+                          className="form-input"
+                          name="cardCvv"
+                          value={formData.cardCvv}
+                          onChange={(e) => {
+                            const val = e.target.value.replace(/\D/g, '').slice(0, 4);
+                            setFormData(prev => ({ ...prev, cardCvv: val }));
+                          }}
+                          placeholder="•••"
+                          required
+                          maxLength={4}
+                          id="input-card-cvv"
+                        />
+                      </div>
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label">{t('cardName')}</label>
+                      <input
+                        type="text"
+                        className="form-input"
+                        name="cardName"
+                        value={formData.cardName}
+                        onChange={handleChange}
+                        placeholder={t('cardNamePlaceholder')}
+                        required
+                        id="input-card-name"
+                      />
+                    </div>
+                    <div className="card-security-note">
+                      🔒 {t('cardSecurityNote')}
+                    </div>
                   </div>
                 )}
               </div>

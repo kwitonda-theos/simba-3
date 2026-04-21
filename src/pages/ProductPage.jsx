@@ -11,6 +11,7 @@ export default function ProductPage({ products }) {
   const { t } = useLanguage();
   const [imageError, setImageError] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
+  const [selectedQty, setSelectedQty] = useState(1);
 
   const product = useMemo(() => {
     return products.find(p => p.id === Number(productId));
@@ -42,7 +43,7 @@ export default function ProductPage({ products }) {
   const imgSrc = imageError ? generateImageUrl(product) : product.image;
 
   const handleAddToCart = () => {
-    addToCart(product);
+    addToCart(product, selectedQty);
     setJustAdded(true);
     setTimeout(() => setJustAdded(false), 1500);
   };
@@ -118,14 +119,21 @@ export default function ProductPage({ products }) {
                     </span>
                   </div>
                 ) : (
-                  <button
-                    className={`btn-primary-lg ${justAdded ? 'added' : ''}`}
-                    onClick={handleAddToCart}
-                    id="product-add-cart"
-                    style={justAdded ? { background: 'var(--accent-emerald)' } : {}}
-                  >
-                    {justAdded ? '✓ ' + t('added') : '🛒 ' + t('addToCart')}
-                  </button>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', flex: 1 }}>
+                    <div className="quantity-controls" style={{ transform: 'scale(1.3)', transformOrigin: 'left' }}>
+                      <button className="qty-btn" onClick={() => setSelectedQty(Math.max(1, selectedQty - 1))}>−</button>
+                      <span className="qty-value">{selectedQty}</span>
+                      <button className="qty-btn" onClick={() => setSelectedQty(selectedQty + 1)}>+</button>
+                    </div>
+                    <button
+                      className={`btn-primary-lg ${justAdded ? 'added' : ''}`}
+                      onClick={handleAddToCart}
+                      id="product-add-cart"
+                      style={justAdded ? { background: 'var(--accent-emerald)' } : {}}
+                    >
+                      {justAdded ? '✓ ' + t('added') : '🛒 ' + t('addToCart')}
+                    </button>
+                  </div>
                 )}
               </div>
             </div>

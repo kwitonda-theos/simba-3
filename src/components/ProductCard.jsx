@@ -9,6 +9,7 @@ export default function ProductCard({ product }) {
   const { t } = useLanguage();
   const [imageError, setImageError] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
+  const [selectedQty, setSelectedQty] = useState(1);
 
   const inCart = isInCart(product.id);
   const quantity = getItemQuantity(product.id);
@@ -16,7 +17,7 @@ export default function ProductCard({ product }) {
   const handleAddToCart = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    addToCart(product);
+    addToCart(product, selectedQty);
     setJustAdded(true);
     setTimeout(() => setJustAdded(false), 1000);
   };
@@ -64,13 +65,21 @@ export default function ProductCard({ product }) {
               <button className="qty-btn" onClick={handleIncrement}>+</button>
             </div>
           ) : (
-            <button
-              className={`add-to-cart-btn ${justAdded ? 'added' : ''}`}
-              onClick={handleAddToCart}
-              id={`add-cart-${product.id}`}
-            >
-              {justAdded ? '✓' : '+'} <span>{justAdded ? t('added') : t('addToCart')}</span>
-            </button>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
+              <div className="quantity-controls" style={{ width: '100%', justifyContent: 'space-between' }}>
+                <button className="qty-btn" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedQty(Math.max(1, selectedQty - 1)); }}>−</button>
+                <span className="qty-value">{selectedQty}</span>
+                <button className="qty-btn" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedQty(selectedQty + 1); }}>+</button>
+              </div>
+              <button
+                className={`add-to-cart-btn ${justAdded ? 'added' : ''}`}
+                onClick={handleAddToCart}
+                id={`add-cart-${product.id}`}
+                style={{ width: '100%' }}
+              >
+                {justAdded ? '✓' : '+'} <span>{justAdded ? t('added') : t('addToCart')}</span>
+              </button>
+            </div>
           )}
         </div>
       </div>
