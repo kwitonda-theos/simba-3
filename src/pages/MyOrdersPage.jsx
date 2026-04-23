@@ -2,51 +2,107 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
+import { supabase } from '../lib/supabase';
 import { formatPrice } from '../utils/helpers';
 
 export default function MyOrdersPage() {
   const { user } = useAuth();
   const { t } = useLanguage();
   const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (user) {
-      const allOrders = JSON.parse(localStorage.getItem('simba-orders') || '[]');
-      const userOrders = allOrders.filter(o => o.email === user.email);
-      setOrders(userOrders);
+      fetchOrders();
     }
   }, [user]);
 
-  const cancelOrder = (orderId) => {
-    if (window.confirm('Are you sure you want to cancel this order?')) {
-      const allOrders = JSON.parse(localStorage.getItem('simba-orders') || '[]');
-      const updatedOrders = allOrders.map(o => 
-        o.id === orderId ? { ...o, status: 'Cancelled' } : o
-      );
-      localStorage.setItem('simba-orders', JSON.stringify(updatedOrders));
-      
-      // Update local state
-      setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: 'Cancelled' } : o));
+  const fetchOrders = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('orders')
+        .select(`
+          *,
+          branches (name),
+          order_items (
+            *,
+            products (name, image_url)
+          )
+        `)
+        .eq('customer_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      // Map Supabase data to frontend format
+      const formattedOrders = (data || []).map(order => ({
+        id: order.id,
+        orderNumber: order.order_number,
+        date: order.created_at,
+        total: order.total_amount,
+        status: order.status.charAt(0).toUpperCase() + order.status.slice(1),
+        customerName: user.name,
+        pickupBranch: order.branches?.name || 'Main Branch',
+        items: order.order_items.map(item => ({
+          name: item.products?.name,
+          image: item.products?.image_url,
+          quantity: item.quantity,
+          price: item.price_at_purchase
+        }))
+      }));
+
+      setOrders(formattedOrders);
+    } catch (err) {
+      console.error('Failed to fetch orders:', err.message);
+    } finally {
+      setLoading(false);
     }
   };
+
+  const cancelOrder = async (orderId) => {
+    if (window.confirm(t('confirmCancel'))) {
+      try {
+        const { error } = await supabase
+          .from('orders')
+          .update({ status: 'cancelled' })
+          .eq('id', orderId);
+
+        if (error) throw error;
+        
+        // Refresh orders
+        fetchOrders();
+      } catch (err) {
+        alert('Failed to cancel order: ' + err.message);
+      }
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="container" style={{ padding: '80px 0', textAlign: 'center' }}>
+        <div className="spinner" style={{ margin: '0 auto' }}></div>
+      </div>
+    );
+  }
 
   return (
     <div className="container" style={{ padding: '40px 20px', minHeight: '60vh' }}>
       <div className="breadcrumb" style={{ marginBottom: '24px' }}>
         <Link to="/">{t('home')}</Link>
         <span className="breadcrumb-separator">›</span>
-        <span>My Orders</span>
+        <span>{t('myOrders')}</span>
       </div>
 
-      <h1 className="section-title" style={{ marginBottom: '32px' }}>My Orders</h1>
+      <h1 className="section-title" style={{ marginBottom: '32px' }}>{t('myOrders')}</h1>
 
       {orders.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '60px 0', background: 'var(--bg-card)', borderRadius: '24px', border: '1px solid var(--border-color)' }}>
           <div style={{ fontSize: '64px', marginBottom: '24px' }}>📦</div>
-          <h3>No orders yet</h3>
-          <p style={{ color: 'var(--text-tertiary)', marginBottom: '32px' }}>You haven't placed any orders with us yet.</p>
+          <h3>{t('noOrders')}</h3>
+          <p style={{ color: 'var(--text-tertiary)', marginBottom: '32px' }}>{t('noOrdersText')}</p>
           <Link to="/" className="hero-cta" style={{ display: 'inline-flex' }}>
-            Start Shopping
+            {t('startShopping')}
           </Link>
         </div>
       ) : (
@@ -71,24 +127,24 @@ export default function MyOrdersPage() {
               }}>
                 <div style={{ display: 'flex', gap: '32px', flexWrap: 'wrap' }}>
                   <div>
-                    <div style={{ fontSize: '12px', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>Order Placed</div>
+                    <div style={{ fontSize: '12px', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>{t('orderPlacedOn')}</div>
                     <div style={{ fontWeight: 600 }}>{new Date(order.date).toLocaleDateString()}</div>
                   </div>
                   <div>
-                    <div style={{ fontSize: '12px', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>Total</div>
+                    <div style={{ fontSize: '12px', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>{t('total')}</div>
                     <div style={{ fontWeight: 600 }}>{formatPrice(order.total)} RWF</div>
                   </div>
                   <div>
-                    <div style={{ fontSize: '12px', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>Ship To</div>
+                    <div style={{ fontSize: '12px', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>{t('shipTo')}</div>
                     <div style={{ fontWeight: 600 }}>{order.customerName}</div>
                   </div>
                   <div>
-                    <div style={{ fontSize: '12px', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>Branch</div>
-                    <div style={{ fontWeight: 600 }}>{order.pickupBranch || 'Main Branch'}</div>
+                    <div style={{ fontSize: '12px', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>{t('branch')}</div>
+                    <div style={{ fontWeight: 600 }}>{order.pickupBranch === 'Main Branch' ? t('mainBranch') : (order.pickupBranch || t('mainBranch'))}</div>
                   </div>
                 </div>
                 <div>
-                  <div style={{ fontSize: '12px', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px', textAlign: 'right' }}>Order # {order.orderNumber}</div>
+                  <div style={{ fontSize: '12px', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px', textAlign: 'right' }}>{t('orderNumber')} # {order.orderNumber}</div>
                   <div style={{ fontWeight: 700, color: 'var(--primary)', textAlign: 'right' }}>{order.status}</div>
                 </div>
               </div>
@@ -100,7 +156,7 @@ export default function MyOrdersPage() {
                       <img src={item.image} alt={item.name} style={{ width: '60px', height: '60px', borderRadius: '12px', objectFit: 'cover' }} />
                       <div style={{ flex: 1 }}>
                         <div style={{ fontWeight: 600 }}>{item.name}</div>
-                        <div style={{ fontSize: '14px', color: 'var(--text-tertiary)' }}>Qty: {item.quantity}</div>
+                        <div style={{ fontSize: '14px', color: 'var(--text-tertiary)' }}>{t('items')}: {item.quantity}</div>
                       </div>
                       <div style={{ fontWeight: 600 }}>{formatPrice(item.price * item.quantity)} RWF</div>
                     </div>
@@ -122,7 +178,7 @@ export default function MyOrdersPage() {
                       onMouseOver={(e) => { e.target.style.background = 'var(--accent-red)'; e.target.style.color = 'white'; }}
                       onMouseOut={(e) => { e.target.style.background = 'transparent'; e.target.style.color = 'var(--accent-red)'; }}
                     >
-                      Cancel Order
+                      {t('cancelOrder')}
                     </button>
                   </div>
                 )}

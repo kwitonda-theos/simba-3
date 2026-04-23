@@ -55,7 +55,7 @@ export default function HomePage({ products, categories }) {
               <div className="category-card-overlay" />
               <div className="category-card-content">
                 <div className="category-card-name">
-                  {getCategoryIcon(cat)} {cat}
+                  {getCategoryIcon(cat)} {t(cat)}
                 </div>
                 <div className="category-card-count">
                   {categoryCounts[cat] || 0} {t('showingProducts')}

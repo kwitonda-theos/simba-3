@@ -1,53 +1,31 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useLanguage } from '../context/LanguageContext';
 
-const BRANCHES = [
-  "Simba Centenary",
-  "Simba Gishushu",
-  "Simba Kimironko",
-  "Simba Kicukiro",
-  "Simba Kigali Height",
-  "Simba UTC",
-  "Simba Gacuriro",
-  "Simba Gikondo",
-  "Simba sonatube",
-  "Simba Kisimenti",
-  "Simba Rebero"
-];
-
-export default function BranchManagerSignupPage() {
-  const { signup } = useAuth();
-  const { t } = useLanguage();
+export default function ResetPasswordPage() {
+  const { updatePassword } = useAuth();
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    branch: '',
-  });
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    if (password !== confirmPassword) {
+      return setError('Passwords do not match');
+    }
+
     setLoading(true);
 
     try {
-      const { error: signupError } = await signup({
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-        role: 'branch_manager',
-        branches: [formData.branch],
-      });
-
-      if (signupError) {
-        setError(signupError);
+      const { error: updateError } = await updatePassword(password);
+      if (updateError) {
+        setError(updateError);
       } else {
-        alert('Check your email for a confirmation link!');
+        alert('Password updated successfully! Please login with your new password.');
         navigate('/login');
       }
     } catch (err) {
@@ -55,10 +33,6 @@ export default function BranchManagerSignupPage() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleChange = (e) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   return (
@@ -72,7 +46,7 @@ export default function BranchManagerSignupPage() {
     }}>
       <div style={{ 
         width: '100%', 
-        maxWidth: '500px', 
+        maxWidth: '440px', 
         background: 'var(--bg-card)', 
         padding: '40px', 
         borderRadius: '24px', 
@@ -91,13 +65,13 @@ export default function BranchManagerSignupPage() {
             margin: '0 auto 16px',
             fontSize: '32px'
           }}>
-            🏢
+            🔐
           </div>
           <h1 style={{ fontSize: '28px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '8px' }}>
-            Branch Manager Sign Up
+            Set New Password
           </h1>
           <p style={{ color: 'var(--text-tertiary)', fontSize: '15px' }}>
-            Manage your branch operations efficiently
+            Please enter your new password below
           </p>
         </div>
 
@@ -119,68 +93,30 @@ export default function BranchManagerSignupPage() {
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div className="form-group">
             <label className="form-label" style={{ marginBottom: '8px', display: 'block', fontWeight: 600 }}>
-              Full Name
-            </label>
-            <input
-              type="text"
-              name="name"
-              className="form-input"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="Manager Name"
-              required
-              disabled={loading}
-              style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none' }}
-            />
-          </div>
-
-          <div className="form-group">
-            <label className="form-label" style={{ marginBottom: '8px', display: 'block', fontWeight: 600 }}>
-              Work Email Address
-            </label>
-            <input
-              type="email"
-              name="email"
-              className="form-input"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="manager@simba.rw"
-              required
-              disabled={loading}
-              style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none' }}
-            />
-          </div>
-
-          <div className="form-group">
-            <label className="form-label" style={{ marginBottom: '8px', display: 'block', fontWeight: 600 }}>
-              Select Your Branch
-            </label>
-            <select
-              name="branch"
-              className="form-input"
-              value={formData.branch}
-              onChange={handleChange}
-              required
-              disabled={loading}
-              style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none', background: 'var(--bg-card)', color: 'var(--text-primary)' }}
-            >
-              <option value="">Choose a branch to manage</option>
-              {BRANCHES.map(branch => (
-                <option key={branch} value={branch}>{branch}</option>
-              ))}
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label className="form-label" style={{ marginBottom: '8px', display: 'block', fontWeight: 600 }}>
-              Password
+              New Password
             </label>
             <input
               type="password"
-              name="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="form-input"
-              value={formData.password}
-              onChange={handleChange}
+              placeholder="••••••••"
+              required
+              minLength={8}
+              disabled={loading}
+              style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none' }}
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label" style={{ marginBottom: '8px', display: 'block', fontWeight: 600 }}>
+              Confirm New Password
+            </label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="form-input"
               placeholder="••••••••"
               required
               disabled={loading}
@@ -207,13 +143,9 @@ export default function BranchManagerSignupPage() {
               cursor: loading ? 'not-allowed' : 'pointer'
             }}
           >
-            {loading ? <span className="spinner" style={{ width: '20px', height: '20px' }} /> : 'Sign Up as Manager ➜'}
+            {loading ? <span className="spinner" style={{ width: '20px', height: '20px' }} /> : 'Update Password'}
           </button>
         </form>
-
-        <p style={{ textAlign: 'center', marginTop: '32px', color: 'var(--text-secondary)', fontSize: '15px' }}>
-          Already have an account? <Link to="/login" style={{ color: 'var(--primary)', fontWeight: 700 }}>Sign In</Link>
-        </p>
       </div>
     </div>
   );

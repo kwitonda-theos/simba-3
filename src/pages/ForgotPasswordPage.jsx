@@ -1,48 +1,34 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 
-export default function CustomerSignupPage() {
-  const { signup } = useAuth();
+export default function ForgotPasswordPage() {
+  const { resetPassword } = useAuth();
   const { t } = useLanguage();
-  const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-  });
+  const [email, setEmail] = useState('');
   const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setMessage('');
     setLoading(true);
 
     try {
-      const { error: signupError } = await signup({
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-        role: 'customer',
-      });
-
-      if (signupError) {
-        setError(signupError);
+      const { error: resetError } = await resetPassword(email);
+      if (resetError) {
+        setError(resetError);
       } else {
-        alert('Check your email for a confirmation link!');
-        navigate('/login');
+        setMessage('Check your email for a password reset link!');
       }
     } catch (err) {
       setError('An unexpected error occurred. Please try again.');
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleChange = (e) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   return (
@@ -56,7 +42,7 @@ export default function CustomerSignupPage() {
     }}>
       <div style={{ 
         width: '100%', 
-        maxWidth: '500px', 
+        maxWidth: '440px', 
         background: 'var(--bg-card)', 
         padding: '40px', 
         borderRadius: '24px', 
@@ -75,13 +61,13 @@ export default function CustomerSignupPage() {
             margin: '0 auto 16px',
             fontSize: '32px'
           }}>
-            🛒
+            🔑
           </div>
           <h1 style={{ fontSize: '28px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '8px' }}>
-            Customer Sign Up
+            {t('forgotPassword')}
           </h1>
           <p style={{ color: 'var(--text-tertiary)', fontSize: '15px' }}>
-            Start your fresh shopping journey with Simba
+            Enter your email to receive a password reset link
           </p>
         </div>
 
@@ -100,52 +86,32 @@ export default function CustomerSignupPage() {
           </div>
         )}
 
+        {message && (
+          <div style={{ 
+            background: 'var(--accent-emerald-glow)', 
+            color: 'var(--accent-emerald)', 
+            padding: '12px 16px', 
+            borderRadius: '12px', 
+            marginBottom: '20px',
+            fontSize: '14px',
+            fontWeight: 500,
+            border: '1px solid rgba(16, 185, 129, 0.2)'
+          }}>
+            ✅ {message}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div className="form-group">
             <label className="form-label" style={{ marginBottom: '8px', display: 'block', fontWeight: 600 }}>
-              Full Name
-            </label>
-            <input
-              type="text"
-              name="name"
-              className="form-input"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="John Doe"
-              required
-              disabled={loading}
-              style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none' }}
-            />
-          </div>
-
-          <div className="form-group">
-            <label className="form-label" style={{ marginBottom: '8px', display: 'block', fontWeight: 600 }}>
-              Email Address
+              {t('email')}
             </label>
             <input
               type="email"
-              name="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="form-input"
-              value={formData.email}
-              onChange={handleChange}
               placeholder="name@example.com"
-              required
-              disabled={loading}
-              style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none' }}
-            />
-          </div>
-
-          <div className="form-group">
-            <label className="form-label" style={{ marginBottom: '8px', display: 'block', fontWeight: 600 }}>
-              Password
-            </label>
-            <input
-              type="password"
-              name="password"
-              className="form-input"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="••••••••"
               required
               disabled={loading}
               style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none' }}
@@ -171,12 +137,12 @@ export default function CustomerSignupPage() {
               cursor: loading ? 'not-allowed' : 'pointer'
             }}
           >
-            {loading ? <span className="spinner" style={{ width: '20px', height: '20px' }} /> : 'Sign Up as Customer ➜'}
+            {loading ? <span className="spinner" style={{ width: '20px', height: '20px' }} /> : 'Send Reset Link'}
           </button>
         </form>
 
         <p style={{ textAlign: 'center', marginTop: '32px', color: 'var(--text-secondary)', fontSize: '15px' }}>
-          Already have an account? <Link to="/login" style={{ color: 'var(--primary)', fontWeight: 700 }}>Sign In</Link>
+          Back to <Link to="/login" style={{ color: 'var(--primary)', fontWeight: 700 }}>{t('login')}</Link>
         </p>
       </div>
     </div>

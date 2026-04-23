@@ -58,7 +58,7 @@ export default function FilterPanel({
                 checked={selectedCategories.includes(cat)}
                 onChange={() => handleCategoryToggle(cat)}
               />
-              <span>{cat}</span>
+              <span>{t(cat)}</span>
               {categoryCounts && (
                 <span className="filter-checkbox-count">{categoryCounts[cat] || 0}</span>
               )}

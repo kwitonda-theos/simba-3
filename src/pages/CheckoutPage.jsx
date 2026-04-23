@@ -3,6 +3,7 @@ import { Link, useNavigate, Navigate, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
+import { supabase } from '../lib/supabase';
 import { formatPrice, generateOrderNumber } from '../utils/helpers';
 
 const BRANCHES = [
@@ -257,14 +258,14 @@ export default function CheckoutPage() {
                       required
                       id="input-district"
                     >
-                      <option value="">Select District</option>
-                      <option value="Gasabo">Gasabo</option>
-                      <option value="Kicukiro">Kicukiro</option>
-                      <option value="Nyarugenge">Nyarugenge</option>
+                      <option value="">{t('selectDistrict')}</option>
+                      <option value="Gasabo">{t('Gasabo')}</option>
+                      <option value="Kicukiro">{t('Kicukiro')}</option>
+                      <option value="Nyarugenge">{t('Nyarugenge')}</option>
                     </select>
                   </div>
                   <div className="form-group full-width">
-                    <label className="form-label">{t('pickupBranch') || 'Pickup Branch'}</label>
+                    <label className="form-label">{t('pickupBranch')}</label>
                     <select
                       className="form-input"
                       name="pickupBranch"
@@ -273,9 +274,9 @@ export default function CheckoutPage() {
                       required
                       id="input-branch"
                     >
-                      <option value="">Select Branch for Pickup</option>
+                      <option value="">{t('selectBranchForPickup')}</option>
                       {BRANCHES.map(branch => (
-                        <option key={branch} value={branch}>{branch}</option>
+                        <option key={branch} value={branch}>{branch === 'Main Branch' ? t('mainBranch') : branch}</option>
                       ))}
                     </select>
                   </div>

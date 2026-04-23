@@ -23,7 +23,7 @@ export default function CategoryNav({ categories, activeCategory }) {
             className={`category-nav-item ${activeCategory === cat ? 'active' : ''}`}
             id={`${prefix}-cat-nav-${cat.replace(/[^a-zA-Z]/g, '')}`}
           >
-            {getCategoryIcon(cat)} {cat}
+            {getCategoryIcon(cat)} {t(cat)}
           </Link>
         </li>
       ))}

@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 
 const BRANCHES = [
+  "Main Branch",
   "Simba Centenary",
   "Simba Gishushu",
   "Simba Kimironko",
@@ -28,16 +29,35 @@ export default function SignupPage() {
     role: 'customer',
     branch: '',
   });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    signup({
-      name: formData.name,
-      email: formData.email,
-      role: formData.role,
-      branch: formData.role === 'branch-manager' ? formData.branch : null,
-    });
-    navigate('/');
+    setError('');
+    setLoading(true);
+
+    try {
+      const { error: signupError } = await signup({
+        email: formData.email,
+        password: formData.password,
+        name: formData.name,
+        role: formData.role,
+        branches: formData.role === 'branch_manager' ? [formData.branch] : [],
+      });
+
+      if (signupError) {
+        setError(signupError);
+      } else {
+        // Successful signup usually requires email confirmation with Supabase default settings
+        alert('Check your email for a confirmation link!');
+        navigate('/login');
+      }
+    } catch (err) {
+      setError('An unexpected error occurred. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChange = (e) => {
@@ -77,17 +97,32 @@ export default function SignupPage() {
             👋
           </div>
           <h1 style={{ fontSize: '28px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '8px' }}>
-            {t('createAccount') || 'Create Account'}
+            {t('createAccount')}
           </h1>
           <p style={{ color: 'var(--text-tertiary)', fontSize: '15px' }}>
-            {t('signupSubtitle') || 'Join Simba Supermarket today'}
+            {t('signupSubtitle')}
           </p>
         </div>
+
+        {error && (
+          <div style={{ 
+            background: 'var(--accent-red-glow)', 
+            color: 'var(--accent-red)', 
+            padding: '12px 16px', 
+            borderRadius: '12px', 
+            marginBottom: '20px',
+            fontSize: '14px',
+            fontWeight: 500,
+            border: '1px solid rgba(239, 68, 68, 0.2)'
+          }}>
+            ⚠️ {error}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div className="form-group">
             <label className="form-label" style={{ marginBottom: '8px', display: 'block', fontWeight: 600 }}>
-              {t('name') || 'Full Name'}
+              {t('name')}
             </label>
             <input
               type="text"
@@ -97,6 +132,7 @@ export default function SignupPage() {
               onChange={handleChange}
               placeholder="John Doe"
               required
+              disabled={loading}
               style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none' }}
             />
           </div>
@@ -113,13 +149,14 @@ export default function SignupPage() {
               onChange={handleChange}
               placeholder="name@example.com"
               required
+              disabled={loading}
               style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none' }}
             />
           </div>
 
           <div className="form-group">
             <label className="form-label" style={{ marginBottom: '8px', display: 'block', fontWeight: 600 }}>
-              {t('role') || 'I am a...'}
+              {t('role')}
             </label>
             <select
               name="role"
@@ -127,17 +164,18 @@ export default function SignupPage() {
               value={formData.role}
               onChange={handleChange}
               required
+              disabled={loading}
               style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none', background: 'var(--bg-card)', color: 'var(--text-primary)' }}
             >
-              <option value="customer">Customer</option>
-              <option value="branch-manager">Branch Manager</option>
+              <option value="customer">{t('customer')}</option>
+              <option value="branch_manager">{t('branchManager')}</option>
             </select>
           </div>
 
-          {formData.role === 'branch-manager' && (
+          {formData.role === 'branch_manager' && (
             <div className="form-group">
               <label className="form-label" style={{ marginBottom: '8px', display: 'block', fontWeight: 600 }}>
-                Select Your Branch
+                {t('selectYourBranch')}
               </label>
               <select
                 name="branch"
@@ -145,11 +183,12 @@ export default function SignupPage() {
                 value={formData.branch}
                 onChange={handleChange}
                 required
+                disabled={loading}
                 style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none', background: 'var(--bg-card)', color: 'var(--text-primary)' }}
               >
-                <option value="">Choose a branch</option>
+                <option value="">{t('chooseABranch')}</option>
                 {BRANCHES.map(branch => (
-                  <option key={branch} value={branch}>{branch}</option>
+                  <option key={branch} value={branch}>{branch === 'Main Branch' ? t('mainBranch') : branch}</option>
                 ))}
               </select>
             </div>
@@ -157,7 +196,7 @@ export default function SignupPage() {
 
           <div className="form-group">
             <label className="form-label" style={{ marginBottom: '8px', display: 'block', fontWeight: 600 }}>
-              {t('password') || 'Password'}
+              {t('password')}
             </label>
             <input
               type="password"
@@ -167,35 +206,43 @@ export default function SignupPage() {
               onChange={handleChange}
               placeholder="••••••••"
               required
+              disabled={loading}
               style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none' }}
             />
             <p style={{ fontSize: '12px', color: 'var(--text-tertiary)', marginTop: '8px' }}>
-              Must be at least 8 characters long
+              {t('passwordRequirement')}
             </p>
           </div>
           
-          <button type="submit" className="hero-cta" style={{ 
-            width: '100%', 
-            marginTop: '8px', 
-            padding: '14px', 
-            borderRadius: '12px', 
-            fontSize: '16px', 
-            fontWeight: 700,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px'
-          }}>
-            {t('signup') || 'Create Account'} ➜
+          <button 
+            type="submit" 
+            className="hero-cta" 
+            disabled={loading}
+            style={{ 
+              width: '100%', 
+              marginTop: '8px', 
+              padding: '14px', 
+              borderRadius: '12px', 
+              fontSize: '16px', 
+              fontWeight: 700,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              opacity: loading ? 0.7 : 1,
+              cursor: loading ? 'not-allowed' : 'pointer'
+            }}
+          >
+            {loading ? <span className="spinner" style={{ width: '20px', height: '20px' }} /> : (t('signup') + ' ➜')}
           </button>
         </form>
 
         <p style={{ textAlign: 'center', marginTop: '32px', color: 'var(--text-secondary)', fontSize: '15px' }}>
-          {t('haveAccount') || 'Already have an account?'} <Link to="/login" style={{ color: 'var(--primary)', fontWeight: 700 }}>{t('login') || 'Sign In'}</Link>
+          {t('haveAccount')} <Link to="/login" style={{ color: 'var(--primary)', fontWeight: 700 }}>{t('login')}</Link>
         </p>
 
         <div style={{ marginTop: '32px', padding: '16px', borderRadius: '12px', background: 'var(--bg-tertiary)', fontSize: '13px', color: 'var(--text-tertiary)', textAlign: 'center' }}>
-          By creating an account, you agree to our <a href="#" style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>Terms of Service</a> and <a href="#" style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>Privacy Policy</a>.
+          {t('termsAgreement')} <a href="#" style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>{t('termsOfService')}</a> and <a href="#" style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>{t('privacyPolicy')}</a>.
         </div>
       </div>
     </div>

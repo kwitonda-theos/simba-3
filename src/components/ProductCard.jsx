@@ -50,7 +50,7 @@ export default function ProductCard({ product }) {
         )}
       </div>
       <div className="product-card-body">
-        <span className="product-card-category">{product.category}</span>
+        <span className="product-card-category">{t(product.category)}</span>
         <h3 className="product-card-name">{product.name}</h3>
         <span className="product-card-unit">{product.unit}</span>
         <div className="product-card-footer">

@@ -8,6 +8,9 @@ export const translations = {
     cart: "Cart",
     darkMode: "Dark Mode",
     allCategories: "All Categories",
+    hi: "Hi",
+    logout: "Logout",
+    myOrders: "My Orders",
 
     // Hero
     heroBadge: "🛒 Rwanda's #1 Online Supermarket",
@@ -39,6 +42,18 @@ export const translations = {
     browseCategories: "Browse Categories",
     loadMore: "Load More",
     viewAll: "View All",
+    productNotFound: "Product not found",
+
+    // Categories
+    'Cosmetics & Personal Care': "Cosmetics & Personal Care",
+    'Alcoholic Drinks': "Alcoholic Drinks",
+    'Food Products': "Food Products",
+    'Kitchenware & Electronics': "Kitchenware & Electronics",
+    'General': "General",
+    'Cleaning & Sanitary': "Cleaning & Sanitary",
+    'Sports & Fitness': "Sports & Fitness",
+    'Stationery': "Stationery",
+    'Baby Products': "Baby Products",
 
     // Filters
     filters: "Filters",
@@ -73,6 +88,7 @@ export const translations = {
     address: "Delivery Address",
     city: "City",
     district: "District",
+    selectDistrict: "Select District",
     notes: "Delivery Notes (Optional)",
     notesPlaceholder: "Any special instructions...",
     paymentMethod: "Payment Method",
@@ -103,6 +119,13 @@ export const translations = {
     noAccount: "Don't have an account?",
     haveAccount: "Already have an account?",
     pickupBranch: "Pickup Branch",
+    selectBranchForPickup: "Select Branch for Pickup",
+    mainBranch: "Main Branch",
+
+    // Districts
+    Gasabo: "Gasabo",
+    Kicukiro: "Kicukiro",
+    Nyarugenge: "Nyarugenge",
 
     // Confirmation
     orderConfirmed: "Order Confirmed!",
@@ -149,12 +172,66 @@ export const translations = {
     createAccount: "Create Account",
     back: "Back",
     signupSubtitle: "Join Simba Supermarket today",
+    welcomeBack: "Welcome Back",
+    loginSubtitle: "Please enter your details to sign in",
+    forgotPassword: "Forgot password?",
+    orContinueWith: "OR CONTINUE WITH",
+    termsAgreement: "By creating an account, you agree to our",
+    termsOfService: "Terms of Service",
+    privacyPolicy: "Privacy Policy",
+    selectYourBranch: "Select Your Branch",
+    chooseABranch: "Choose a branch",
+
+    // My Orders
+    noOrders: "No orders yet",
+    noOrdersText: "You haven't placed any orders with us yet.",
+    startShopping: "Start Shopping",
+    orderPlacedOn: "Order Placed",
+    shipTo: "Ship To",
+    branch: "Branch",
+    cancelOrder: "Cancel Order",
+    confirmCancel: "Are you sure you want to cancel this order?",
+
+    // Dashboard
+    dashboard: "Dashboard",
+    orders: "Orders",
+    inventory: "Inventory",
+    analytics: "Analytics",
+    recentTransactions: "Recent Transactions",
+    id: "ID",
+    amount: "Amount",
+    status: "Status",
+    actions: "Actions",
+    stockManagement: "Stock Management",
+    clearFilter: "Clear Filter",
+    addProduct: "Add Product",
+    product: "Product",
+    price: "Price",
+    stock: "Stock",
+    action: "Action",
+    save: "Save",
+    productsAvailable: "products available",
+    viewInventory: "View Inventory",
+    addNewProduct: "Add New Product",
+    fillDetails: "Fill in the details to list a new item in your branch.",
+    preview: "Preview",
+    productName: "Product Name",
+    imageUrl: "Image URL",
+    initialStock: "Initial Stock",
+    createProduct: "Create Product",
+    pending: "Pending",
+    ready: "Ready",
+    completed: "Completed",
+    cancelled: "Cancelled",
+    currentDate: "Current Date",
+    welcomeBackManager: "Welcome back",
 
     // Misc
     kigali: "Kigali, Rwanda",
   },
 
   fr: {
+    // Header
     welcome: "Bienvenue chez Simba Supermarché",
     freeDelivery: "Livraison gratuite pour les commandes de plus de 50 000 RWF",
     search: "Rechercher des produits...",
@@ -162,7 +239,11 @@ export const translations = {
     cart: "Panier",
     darkMode: "Mode Sombre",
     allCategories: "Toutes les Catégories",
+    hi: "Bonjour",
+    logout: "Déconnexion",
+    myOrders: "Mes Commandes",
 
+    // Hero
     heroBadge: "🛒 Le Supermarché en ligne #1 du Rwanda",
     heroTitle: "Des Produits Frais Livrés à Votre Porte",
     heroSubtitle: "Faites vos courses parmi 552+ produits dans 9 catégories. Livraison rapide à Kigali.",
@@ -171,6 +252,7 @@ export const translations = {
     heroCategories: "Catégories",
     heroDelivery: "Livraison Rapide",
 
+    // Products
     featuredProducts: "Produits Vedettes",
     allProducts: "Tous les Produits",
     productsIn: "Produits dans",
@@ -191,7 +273,20 @@ export const translations = {
     browseCategories: "Parcourir les Catégories",
     loadMore: "Charger Plus",
     viewAll: "Voir Tout",
+    productNotFound: "Produit non trouvé",
 
+    // Categories
+    'Cosmetics & Personal Care': "Cosmétiques et Soins Personnels",
+    'Alcoholic Drinks': "Boissons Alcoolisées",
+    'Food Products': "Produits Alimentaires",
+    'Kitchenware & Electronics': "Cuisine et Électronique",
+    'General': "Général",
+    'Cleaning & Sanitary': "Nettoyage et Sanitaire",
+    'Sports & Fitness': "Sports et Fitness",
+    'Stationery': "Papeterie",
+    'Baby Products': "Produits pour Bébés",
+
+    // Filters
     filters: "Filtres",
     priceRange: "Gamme de Prix",
     minPrice: "Min",
@@ -201,6 +296,7 @@ export const translations = {
     clearFilters: "Effacer les Filtres",
     applyFilters: "Appliquer les Filtres",
 
+    // Cart
     shoppingCart: "Panier d'Achat",
     emptyCart: "Votre panier est vide",
     emptyCartText: "Ajoutez des produits pour commencer!",
@@ -213,6 +309,7 @@ export const translations = {
     remove: "Supprimer",
     items: "articles",
 
+    // Checkout
     checkout: "Paiement",
     deliveryInfo: "Informations de Livraison",
     firstName: "Prénom",
@@ -222,6 +319,7 @@ export const translations = {
     address: "Adresse de Livraison",
     city: "Ville",
     district: "District",
+    selectDistrict: "Sélectionner le District",
     notes: "Notes de Livraison (Optionnel)",
     notesPlaceholder: "Instructions spéciales...",
     paymentMethod: "Mode de Paiement",
@@ -244,12 +342,29 @@ export const translations = {
     placeOrder: "Passer la Commande",
     orderSummary: "Résumé de la Commande",
     processing: "Traitement...",
+    login: "Connexion",
+    signup: "S'inscrire",
+    name: "Nom Complet",
+    password: "Mot de passe",
+    role: "Je suis un...",
+    noAccount: "Vous n'avez pas de compte ?",
+    haveAccount: "Vous avez déjà un compte ?",
+    pickupBranch: "Succursale de retrait",
+    selectBranchForPickup: "Sélectionner la succursale pour le retrait",
+    mainBranch: "Succursale principale",
 
+    // Districts
+    Gasabo: "Gasabo",
+    Kicukiro: "Kicukiro",
+    Nyarugenge: "Nyarugenge",
+
+    // Confirmation
     orderConfirmed: "Commande Confirmée!",
     orderConfirmedText: "Merci pour votre commande. Vous recevrez un SMS de confirmation sous peu.",
     orderNumber: "Numéro de Commande",
     backToHome: "Retour à l'Accueil",
 
+    // Footer
     aboutSimba: "Le supermarché en ligne le plus fiable du Rwanda. Produits de qualité, prix compétitifs, livrés à votre porte à Kigali.",
     quickLinks: "Liens Rapides",
     home: "Accueil",
@@ -264,6 +379,7 @@ export const translations = {
     contactUs: "Contactez-nous",
     footerRights: "© 2026 Simba Supermarché. Tous droits réservés.",
 
+    // Product Detail
     relatedProducts: "Produits Similaires",
     backToShop: "Retour à la Boutique",
     unit: "Unité",
@@ -287,11 +403,66 @@ export const translations = {
     createAccount: "Créer un Compte",
     back: "Retour",
     signupSubtitle: "Rejoignez Simba Supermarché aujourd'hui",
+    welcomeBack: "Bon retour",
+    loginSubtitle: "Veuillez entrer vos coordonnées pour vous connecter",
+    forgotPassword: "Mot de passe oublié ?",
+    orContinueWith: "OU CONTINUER AVEC",
+    termsAgreement: "En créant un compte, vous acceptez nos",
+    termsOfService: "Conditions d'utilisation",
+    privacyPolicy: "Politique de confidentialité",
+    selectYourBranch: "Sélectionnez votre succursale",
+    chooseABranch: "Choisissez une succursale",
 
+    // My Orders
+    noOrders: "Pas encore de commandes",
+    noOrdersText: "Vous n'avez pas encore passé de commande chez nous.",
+    startShopping: "Commencer les achats",
+    orderPlacedOn: "Commande passée le",
+    shipTo: "Envoyer à",
+    branch: "Succursale",
+    cancelOrder: "Annuler la commande",
+    confirmCancel: "Êtes-vous sûr de vouloir annuler cette commande ?",
+
+    // Dashboard
+    dashboard: "Tableau de bord",
+    orders: "Commandes",
+    inventory: "Inventaire",
+    analytics: "Analyses",
+    recentTransactions: "Transactions Récentes",
+    id: "ID",
+    amount: "Montant",
+    status: "Statut",
+    actions: "Actions",
+    stockManagement: "Gestion des Stocks",
+    clearFilter: "Effacer le Filtre",
+    addProduct: "Ajouter un Produit",
+    product: "Produit",
+    price: "Prix",
+    stock: "Stock",
+    action: "Action",
+    save: "Enregistrer",
+    productsAvailable: "produits disponibles",
+    viewInventory: "Voir l'Inventaire",
+    addNewProduct: "Ajouter un Nouveau Produit",
+    fillDetails: "Remplissez les détails pour lister un nouvel article dans votre succursale.",
+    preview: "Aperçu",
+    productName: "Nom du Produit",
+    imageUrl: "URL de l'image",
+    initialStock: "Stock Initial",
+    createProduct: "Créer le Produit",
+    pending: "En attente",
+    ready: "Prêt",
+    completed: "Terminé",
+    cancelled: "Annulé",
+    currentDate: "Date actuelle",
+    welcomeBackManager: "Bon retour",
+
+    // Misc
     kigali: "Kigali, Rwanda",
   },
 
   rw: {
+    // Header
     welcome: "Murakaza neza kuri Simba Supermarket",
     freeDelivery: "Ibyaguzwe birenze 50,000 RWF bigatangwa ku buntu",
     search: "Shakisha ibicuruzwa...",
@@ -299,7 +470,11 @@ export const translations = {
     cart: "Agasanduku",
     darkMode: "Uburyo bw'umwijima",
     allCategories: "Ibyiciro Byose",
+    hi: "Muraho",
+    logout: "Gusohoka",
+    myOrders: "Ibyo Naguze",
 
+    // Hero
     heroBadge: "🛒 Isoko ya #1 ku rubuga rwa interineti mu Rwanda",
     heroTitle: "Ibicuruzwa Bishya Bigatangwa ku Muryango Wawe",
     heroSubtitle: "Gura mu bicuruzwa 552+ mu byiciro 9. Ibyaguzwe bigatangwa vuba muri Kigali.",
@@ -308,6 +483,7 @@ export const translations = {
     heroCategories: "Ibyiciro",
     heroDelivery: "Gutanga Byihuse",
 
+    // Products
     featuredProducts: "Ibicuruzwa Byihariye",
     allProducts: "Ibicuruzwa Byose",
     productsIn: "Ibicuruzwa muri",
@@ -328,7 +504,20 @@ export const translations = {
     browseCategories: "Reba Ibyiciro",
     loadMore: "Ongeraho",
     viewAll: "Reba Byose",
+    productNotFound: "Ibicuruzwa ntibibonetse",
 
+    // Categories
+    'Cosmetics & Personal Care': "Ibikoresho by'Isuku n'Ubuzima",
+    'Alcoholic Drinks': "Ibinyobwa Bisindisha",
+    'Food Products': "Ibiribwa",
+    'Kitchenware & Electronics': "Ibikoresho by'Igikoni n'Ibirindiro",
+    'General': "Ibisanzwe",
+    'Cleaning & Sanitary': "Ibikoresho by'Isuku",
+    'Sports & Fitness': "Siporo n'Imyitozo",
+    'Stationery': "Ibikoresho by'Ishuri",
+    'Baby Products': "Ibikoresho by'Abana",
+
+    // Filters
     filters: "Amasesengura",
     priceRange: "Igiciro",
     minPrice: "Ntoya",
@@ -338,6 +527,7 @@ export const translations = {
     clearFilters: "Siba Amasesengura",
     applyFilters: "Shyira mu bikorwa",
 
+    // Cart
     shoppingCart: "Agasanduku k'Ibicuruzwa",
     emptyCart: "Agasanduku kawe ni ubusa",
     emptyCartText: "Ongeraho ibicuruzwa kugira ngo utangire!",
@@ -350,6 +540,7 @@ export const translations = {
     remove: "Kuraho",
     items: "ibicuruzwa",
 
+    // Checkout
     checkout: "Kwishyura",
     deliveryInfo: "Amakuru y'Ubugurire",
     firstName: "Izina ry'Idini",
@@ -359,6 +550,7 @@ export const translations = {
     address: "Aderesi y'Ubugurire",
     city: "Umujyi",
     district: "Akarere",
+    selectDistrict: "Hitamo Akarere",
     notes: "Icyitonderwa (Ntibisabwa)",
     notesPlaceholder: "Amabwiriza adasanzwe...",
     paymentMethod: "Uburyo bwo Kwishyura",
@@ -389,12 +581,21 @@ export const translations = {
     noAccount: "Nta konti ufite?",
     haveAccount: "Usanzwe ufite konti?",
     pickupBranch: "Ishami ryo gufatiraho",
+    selectBranchForPickup: "Hitamo ishami ryo gufatiraho",
+    mainBranch: "Ishami rikuru",
 
+    // Districts
+    Gasabo: "Gasabo",
+    Kicukiro: "Kicukiro",
+    Nyarugenge: "Nyarugenge",
+
+    // Confirmation
     orderConfirmed: "Ibyo Waguriye Byemejwe!",
     orderConfirmedText: "Urakoze kuba waguriye. Uzabona ubutumwa bwa SMS bukugeza amakuru vuba.",
     orderNumber: "Nomero y'Ibyo Waguriye",
     backToHome: "Subira ku Ntangiriro",
 
+    // Footer
     aboutSimba: "Isoko ryizewe cyane mu Rwanda ryo ku rubuga rwa interineti. Ibicuruzwa byiza, igiciro cyiza, bigatangwa ku muryango wawe muri Kigali.",
     quickLinks: "Aho Ujya Vuba",
     home: "Ahabanza",
@@ -409,6 +610,7 @@ export const translations = {
     contactUs: "Twandikire",
     footerRights: "© 2026 Simba Supermarket. Uburenganzira bwose bwabikiwe.",
 
+    // Product Detail
     relatedProducts: "Ibicuruzwa Bisa",
     backToShop: "Subira mu Isoko",
     unit: "Igipimo",
@@ -432,7 +634,61 @@ export const translations = {
     createAccount: "Gukora Ibiciro",
     back: "Subira",
     signupSubtitle: "Injira mu Simba Supermarket ubu",
+    welcomeBack: "Murakaza neza",
+    loginSubtitle: "Injiza imyirondoro yawe kugira ngo winjire",
+    forgotPassword: "Wibagiwe ijambo ry'ibanga?",
+    orContinueWith: "CYANGWA KOMEZA UKORESHEJE",
+    termsAgreement: "Mugufungura konti, wemeye",
+    termsOfService: "Amabwiriza agenga imikoreshereze",
+    privacyPolicy: "Politiki y'ibanga",
+    selectYourBranch: "Hitamo ishami ryawe",
+    chooseABranch: "Hitamo ishami",
 
+    // My Orders
+    noOrders: "Nta byo waguze biraboneka",
+    noOrdersText: "Ntaragura na rimwe natwe.",
+    startShopping: "Tangira guhaha",
+    orderPlacedOn: "Waguze ku itariki",
+    shipTo: "Byoherejwe kuri",
+    branch: "Ishami",
+    cancelOrder: "Hagarika ibyo waguze",
+    confirmCancel: "Ese uremeye ko uhagaritse ibi waguriye?",
+
+    // Dashboard
+    dashboard: "Dashibodi",
+    orders: "Ibyo baguze",
+    inventory: "Ibicuruzwa bihari",
+    analytics: "Imibare",
+    recentTransactions: "Iheruka kugurwa",
+    id: "ID",
+    amount: "Ayishyuwe",
+    status: "Imiterere",
+    actions: "Ibikorwa",
+    stockManagement: "Gucunga ibicuruzwa",
+    clearFilter: "Siba akayunguruzo",
+    addProduct: "Ongeraho ibicuruzwa",
+    product: "Igicuruzwa",
+    price: "Igiciro",
+    stock: "Ububiko",
+    action: "Igikorwa",
+    save: "Bika",
+    productsAvailable: "ibicuruzwa bihari",
+    viewInventory: "Reba ibicuruzwa",
+    addNewProduct: "Ongeraho igicuruzwa gishya",
+    fillDetails: "Uzuza imyirondoro kugira ngo ushyire igicuruzwa gishya mu ishami ryawe.",
+    preview: "Igaragaza",
+    productName: "Izina ry'igicuruzwa",
+    imageUrl: "Aderesi y'ifoto",
+    initialStock: "Ububiko bwa mbere",
+    createProduct: "Kora igicuruzwa",
+    pending: "Bitegerejwe",
+    ready: "Byiteguye",
+    completed: "Byarangiye",
+    cancelled: "Byahagaritswe",
+    currentDate: "Itariki y'uyu munsi",
+    welcomeBackManager: "Murakaza neza",
+
+    // Misc
     kigali: "Kigali, u Rwanda",
   }
 };

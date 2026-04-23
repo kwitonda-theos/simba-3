@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
+import { supabase } from '../lib/supabase';
 import { formatPrice } from '../utils/helpers';
 
-export default function BranchDashboard({ products, categories }) {
+export default function BranchDashboard({ products: initialProducts, categories }) {
   const { user, logout } = useAuth();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [activeTab, setActiveTab] = useState('orders');
   const [orders, setOrders] = useState([]);
   const [inventory, setInventory] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [filterCategory, setFilterCategory] = useState(null);
   
   // Add Product State
@@ -22,71 +24,158 @@ export default function BranchDashboard({ products, categories }) {
     image: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=200'
   });
 
-  // Load orders and inventory
+  const branchId = user?.user_metadata?.branches?.[0] || user?.primary_branch_id;
+
   useEffect(() => {
-    const allOrders = JSON.parse(localStorage.getItem('simba-orders') || '[]');
-    setOrders(allOrders);
-
-    const savedInventory = JSON.parse(localStorage.getItem('simba-inventory') || '[]');
-    if (savedInventory.length === 0) {
-      const initialInventory = products.map(p => ({
-        ...p,
-        stock: Math.floor(Math.random() * 50) + 10
-      }));
-      setInventory(initialInventory);
-      localStorage.setItem('simba-inventory', JSON.stringify(initialInventory));
-    } else {
-      setInventory(savedInventory);
+    if (user) {
+      fetchDashboardData();
     }
-  }, [products]);
+  }, [user, activeTab]);
 
-  const updateOrderStatus = (orderId, newStatus) => {
-    const updatedOrders = orders.map(o => 
-      o.id === orderId ? { ...o, status: newStatus } : o
-    );
-    setOrders(updatedOrders);
-    localStorage.setItem('simba-orders', JSON.stringify(updatedOrders));
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      
+      // 1. Fetch Orders for this branch
+      let ordersQuery = supabase
+        .from('orders')
+        .select(`
+          *,
+          profiles:customer_id (full_name)
+        `)
+        .order('created_at', { ascending: false });
+
+      if (branchId) {
+        // If it's a UUID, use it, otherwise we might need to find by name
+        ordersQuery = ordersQuery.eq('branch_id', branchId);
+      }
+
+      const { data: ordersData, error: ordersError } = await ordersQuery;
+      if (ordersError) throw ordersError;
+      setOrders(ordersData || []);
+
+      // 2. Fetch Inventory
+      let inventoryQuery = supabase
+        .from('inventory')
+        .select(`
+          *,
+          products (*)
+        `);
+      
+      if (branchId) {
+        inventoryQuery = inventoryQuery.eq('branch_id', branchId);
+      }
+
+      const { data: invData, error: invError } = await inventoryQuery;
+      if (invError) throw invError;
+      
+      setInventory((invData || []).map(item => ({
+        ...item.products,
+        stock: item.stock_quantity,
+        inventory_id: item.id
+      })));
+
+    } catch (err) {
+      console.error('Dashboard fetch error:', err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const updateStock = (productId, newStock) => {
-    const updatedInventory = inventory.map(p => 
-      p.id === productId ? { ...p, stock: Math.max(0, newStock) } : p
-    );
-    setInventory(updatedInventory);
-    localStorage.setItem('simba-inventory', JSON.stringify(updatedInventory));
+  const updateOrderStatus = async (orderId, newStatus) => {
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({ status: newStatus.toLowerCase() })
+        .eq('id', orderId);
+
+      if (error) throw error;
+      setOrders(orders.map(o => o.id === orderId ? { ...o, status: newStatus.toLowerCase() } : o));
+    } catch (err) {
+      alert('Failed to update order: ' + err.message);
+    }
   };
 
-  const handleAddProduct = (e) => {
+  const updateStock = async (inventoryId, productId, newStock) => {
+    try {
+      const { error } = await supabase
+        .from('inventory')
+        .update({ stock_quantity: Math.max(0, newStock) })
+        .eq('id', inventoryId);
+
+      if (error) throw error;
+      
+      setInventory(inventory.map(p => 
+        p.id === productId ? { ...p, stock: Math.max(0, newStock) } : p
+      ));
+    } catch (err) {
+      alert('Failed to update stock: ' + err.message);
+    }
+  };
+
+  const handleAddProduct = async (e) => {
     e.preventDefault();
-    const productToAdd = {
-      ...newProduct,
-      id: Date.now(),
-      price: parseInt(newProduct.price),
-      stock: parseInt(newProduct.stock),
-      inStock: parseInt(newProduct.stock) > 0
-    };
+    try {
+      // 1. Create Product
+      const { data: prodData, error: prodError } = await supabase
+        .from('products')
+        .insert({
+          name: newProduct.name,
+          category: newProduct.category,
+          price: parseInt(newProduct.price),
+          unit: newProduct.unit,
+          image_url: newProduct.image
+        })
+        .select()
+        .single();
 
-    const updatedInventory = [productToAdd, ...inventory];
-    setInventory(updatedInventory);
-    localStorage.setItem('simba-inventory', JSON.stringify(updatedInventory));
-    
-    setNewProduct({
-      name: '',
-      category: categories[0] || '',
-      price: '',
-      stock: '',
-      unit: 'pcs',
-      image: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=200'
-    });
-    setShowAddModal(false);
+      if (prodError) throw prodError;
+
+      // 2. Link to Inventory if branch exists
+      if (branchId) {
+        const { error: invError } = await supabase
+          .from('inventory')
+          .insert({
+            branch_id: branchId,
+            product_id: prodData.id,
+            stock_quantity: parseInt(newProduct.stock)
+          });
+        if (invError) throw invError;
+      }
+
+      fetchDashboardData();
+      setShowAddModal(false);
+    } catch (err) {
+      alert('Failed to add product: ' + err.message);
+    }
   };
 
   const navItems = [
-    { id: 'orders', label: 'Orders', icon: '📝' },
-    { id: 'inventory', label: 'Inventory', icon: '📦' },
-    { id: 'categories', label: 'Categories', icon: '🏷️' },
-    { id: 'analytics', label: 'Analytics', icon: '📊' },
+    { id: 'orders', label: t('orders'), icon: '📝' },
+    { id: 'inventory', label: t('inventory'), icon: '📦' },
+    { id: 'categories', label: t('categories'), icon: '🏷️' },
+    { id: 'analytics', label: t('analytics'), icon: '📊' },
   ];
+
+  const getStatusLabel = (status) => {
+    if (!status) return t('pending');
+    switch(status.toLowerCase()) {
+      case 'pending': return t('pending');
+      case 'processing': return t('processing');
+      case 'ready': return t('ready');
+      case 'completed': return t('completed');
+      case 'cancelled': return t('cancelled');
+      default: return status;
+    }
+  };
+
+  if (loading && orders.length === 0) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', width: '100%', background: 'var(--bg-secondary)' }}>
+        <div className="spinner"></div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ 
@@ -115,7 +204,7 @@ export default function BranchDashboard({ products, categories }) {
             <span style={{ fontWeight: 800, fontSize: '20px', letterSpacing: '-0.5px' }}>Simba Manager</span>
           </div>
           <div style={{ fontSize: '12px', color: 'var(--text-tertiary)', fontWeight: 600, textTransform: 'uppercase' }}>
-            {user.branch || 'Main Branch'}
+             Manager Dashboard
           </div>
         </div>
 
@@ -163,7 +252,7 @@ export default function BranchDashboard({ products, categories }) {
               background: 'rgba(239, 68, 68, 0.05)',
             }}
           >
-            <span>🚪</span> Logout
+            <span>🚪</span> {t('logout')}
           </button>
         </div>
       </aside>
@@ -176,12 +265,12 @@ export default function BranchDashboard({ products, categories }) {
               {navItems.find(i => i.id === activeTab)?.label}
             </h1>
             <p style={{ color: 'var(--text-tertiary)', fontSize: '16px' }}>
-              Welcome back, <strong>{user.name}</strong>.
+              {t('welcomeBackManager')}, <strong>{user?.name}</strong>.
             </p>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: '14px', color: 'var(--text-tertiary)', marginBottom: '4px' }}>Current Date</div>
-            <div style={{ fontWeight: 700, fontSize: '16px' }}>{new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}</div>
+            <div style={{ fontSize: '14px', color: 'var(--text-tertiary)', marginBottom: '4px' }}>{t('currentDate')}</div>
+            <div style={{ fontWeight: 700, fontSize: '16px' }}>{new Date().toLocaleDateString(language === 'en' ? 'en-GB' : (language === 'fr' ? 'fr-FR' : 'rw-RW'), { weekday: 'long', day: 'numeric', month: 'long' })}</div>
           </div>
         </header>
 
@@ -189,38 +278,38 @@ export default function BranchDashboard({ products, categories }) {
         {activeTab === 'orders' && (
           <div style={{ background: 'var(--bg-card)', borderRadius: '24px', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-md)', overflow: 'hidden' }}>
             <div style={{ padding: '24px', borderBottom: '1px solid var(--border-light)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ fontWeight: 700 }}>Recent Transactions</h3>
+              <h3 style={{ fontWeight: 700 }}>{t('recentTransactions')}</h3>
             </div>
             <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr style={{ textAlign: 'left', background: 'var(--bg-secondary)' }}>
-                    <th style={{ padding: '16px 24px', fontSize: '13px', color: 'var(--text-tertiary)', textTransform: 'uppercase' }}>ID</th>
-                    <th style={{ padding: '16px 24px', fontSize: '13px', color: 'var(--text-tertiary)', textTransform: 'uppercase' }}>Customer</th>
-                    <th style={{ padding: '16px 24px', fontSize: '13px', color: 'var(--text-tertiary)', textTransform: 'uppercase' }}>Amount</th>
-                    <th style={{ padding: '16px 24px', fontSize: '13px', color: 'var(--text-tertiary)', textTransform: 'uppercase' }}>Status</th>
-                    <th style={{ padding: '16px 24px', fontSize: '13px', color: 'var(--text-tertiary)', textTransform: 'uppercase' }}>Actions</th>
+                    <th style={{ padding: '16px 24px', fontSize: '13px', color: 'var(--text-tertiary)', textTransform: 'uppercase' }}>{t('id')}</th>
+                    <th style={{ padding: '16px 24px', fontSize: '13px', color: 'var(--text-tertiary)', textTransform: 'uppercase' }}>{t('customer')}</th>
+                    <th style={{ padding: '16px 24px', fontSize: '13px', color: 'var(--text-tertiary)', textTransform: 'uppercase' }}>{t('amount')}</th>
+                    <th style={{ padding: '16px 24px', fontSize: '13px', color: 'var(--text-tertiary)', textTransform: 'uppercase' }}>{t('status')}</th>
+                    <th style={{ padding: '16px 24px', fontSize: '13px', color: 'var(--text-tertiary)', textTransform: 'uppercase' }}>{t('actions')}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {orders.map(order => (
                     <tr key={order.id} style={{ borderBottom: '1px solid var(--border-light)' }}>
-                      <td style={{ padding: '20px 24px', fontWeight: 700, color: 'var(--primary)' }}>#{order.orderNumber}</td>
+                      <td style={{ padding: '20px 24px', fontWeight: 700, color: 'var(--primary)' }}>#{order.order_number}</td>
                       <td style={{ padding: '20px 24px' }}>
-                        <div style={{ fontWeight: 600 }}>{order.customerName}</div>
-                        <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>{order.email}</div>
+                        <div style={{ fontWeight: 600 }}>{order.profiles?.full_name}</div>
+                        <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>{order.contact_phone}</div>
                       </td>
-                      <td style={{ padding: '20px 24px', fontWeight: 700 }}>{formatPrice(order.total)} RWF</td>
+                      <td style={{ padding: '20px 24px', fontWeight: 700 }}>{formatPrice(order.total_amount)} RWF</td>
                       <td style={{ padding: '20px 24px' }}>
                         <span style={{ 
                           padding: '6px 12px', 
                           borderRadius: '8px', 
                           fontSize: '12px', 
                           fontWeight: 700,
-                          background: order.status === 'Completed' ? 'rgba(16, 185, 129, 0.1)' : order.status === 'Cancelled' ? 'rgba(239, 68, 68, 0.1)' : 'var(--primary-glow)',
-                          color: order.status === 'Completed' ? 'var(--accent-emerald)' : order.status === 'Cancelled' ? 'var(--accent-red)' : 'var(--primary)'
+                          background: order.status === 'completed' ? 'rgba(16, 185, 129, 0.1)' : order.status === 'cancelled' ? 'rgba(239, 68, 68, 0.1)' : 'var(--primary-glow)',
+                          color: order.status === 'completed' ? 'var(--accent-emerald)' : order.status === 'cancelled' ? 'var(--accent-red)' : 'var(--primary)'
                         }}>
-                          {order.status}
+                          {getStatusLabel(order.status)}
                         </span>
                       </td>
                       <td style={{ padding: '20px 24px' }}>
@@ -229,11 +318,11 @@ export default function BranchDashboard({ products, categories }) {
                           onChange={(e) => updateOrderStatus(order.id, e.target.value)}
                           style={{ padding: '8px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--bg-primary)', cursor: 'pointer' }}
                         >
-                          <option value="Pending">Pending</option>
-                          <option value="Processing">Processing</option>
-                          <option value="Ready">Ready</option>
-                          <option value="Completed">Completed</option>
-                          <option value="Cancelled">Cancelled</option>
+                          <option value="pending">{t('pending')}</option>
+                          <option value="processing">{t('processing')}</option>
+                          <option value="ready">{t('ready')}</option>
+                          <option value="completed">{t('completed')}</option>
+                          <option value="cancelled">{t('cancelled')}</option>
                         </select>
                       </td>
                     </tr>
@@ -250,8 +339,8 @@ export default function BranchDashboard({ products, categories }) {
             <div style={{ padding: '24px', borderBottom: '1px solid var(--border-light)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
               <div>
                 <h3 style={{ fontWeight: 700 }}>
-                  Stock Management 
-                  {filterCategory && <span style={{ marginLeft: '12px', fontSize: '14px', padding: '4px 12px', background: 'var(--primary-glow)', color: 'var(--primary)', borderRadius: '20px' }}>{filterCategory}</span>}
+                  {t('stockManagement')} 
+                  {filterCategory && <span style={{ marginLeft: '12px', fontSize: '14px', padding: '4px 12px', background: 'var(--primary-glow)', color: 'var(--primary)', borderRadius: '20px' }}>{t(filterCategory)}</span>}
                 </h3>
               </div>
               <div style={{ display: 'flex', gap: '12px' }}>
@@ -259,23 +348,23 @@ export default function BranchDashboard({ products, categories }) {
                   <button 
                     onClick={() => setFilterCategory(null)}
                     style={{ padding: '10px 20px', background: 'var(--bg-secondary)', borderRadius: '12px', fontWeight: 600, fontSize: '14px' }}
-                  >Clear Filter</button>
+                  >{t('clearFilter')}</button>
                 )}
                 <button 
                   onClick={() => setShowAddModal(true)}
                   style={{ padding: '10px 20px', background: 'var(--primary)', color: 'white', borderRadius: '12px', fontWeight: 700, fontSize: '14px' }}
-                >+ Add Product</button>
+                >+ {t('addProduct')}</button>
               </div>
             </div>
             <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr style={{ textAlign: 'left', background: 'var(--bg-secondary)' }}>
-                    <th style={{ padding: '16px 24px', fontSize: '13px', color: 'var(--text-tertiary)', textTransform: 'uppercase' }}>Product</th>
-                    <th style={{ padding: '16px 24px', fontSize: '13px', color: 'var(--text-tertiary)', textTransform: 'uppercase' }}>Category</th>
-                    <th style={{ padding: '16px 24px', fontSize: '13px', color: 'var(--text-tertiary)', textTransform: 'uppercase' }}>Price</th>
-                    <th style={{ padding: '16px 24px', fontSize: '13px', color: 'var(--text-tertiary)', textTransform: 'uppercase' }}>Stock</th>
-                    <th style={{ padding: '16px 24px', fontSize: '13px', color: 'var(--text-tertiary)', textTransform: 'uppercase' }}>Action</th>
+                    <th style={{ padding: '16px 24px', fontSize: '13px', color: 'var(--text-tertiary)', textTransform: 'uppercase' }}>{t('product')}</th>
+                    <th style={{ padding: '16px 24px', fontSize: '13px', color: 'var(--text-tertiary)', textTransform: 'uppercase' }}>{t('category')}</th>
+                    <th style={{ padding: '16px 24px', fontSize: '13px', color: 'var(--text-tertiary)', textTransform: 'uppercase' }}>{t('price')}</th>
+                    <th style={{ padding: '16px 24px', fontSize: '13px', color: 'var(--text-tertiary)', textTransform: 'uppercase' }}>{t('stock')}</th>
+                    <th style={{ padding: '16px 24px', fontSize: '13px', color: 'var(--text-tertiary)', textTransform: 'uppercase' }}>{t('action')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -285,22 +374,22 @@ export default function BranchDashboard({ products, categories }) {
                       <tr key={product.id} style={{ borderBottom: '1px solid var(--border-light)' }}>
                         <td style={{ padding: '20px 24px' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                            <img src={product.image} alt="" style={{ width: '48px', height: '48px', borderRadius: '12px', objectFit: 'cover', background: 'var(--bg-tertiary)' }} />
+                            <img src={product.image_url} alt="" style={{ width: '48px', height: '48px', borderRadius: '12px', objectFit: 'cover', background: 'var(--bg-tertiary)' }} />
                             <div style={{ fontWeight: 600 }}>{product.name}</div>
                           </div>
                         </td>
-                        <td style={{ padding: '20px 24px', color: 'var(--text-secondary)' }}>{product.category}</td>
+                        <td style={{ padding: '20px 24px', color: 'var(--text-secondary)' }}>{t(product.category)}</td>
                         <td style={{ padding: '20px 24px', fontWeight: 600 }}>{formatPrice(product.price)}</td>
                         <td style={{ padding: '20px 24px' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                             <button 
-                              onClick={() => updateStock(product.id, product.stock - 1)}
+                              onClick={() => updateStock(product.inventory_id, product.id, product.stock - 1)}
                               style={{ width: '32px', height: '32px', borderRadius: '8px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-secondary)' }}
                             >−</button>
                             <input 
                               type="number" 
                               value={product.stock}
-                              onChange={(e) => updateStock(product.id, parseInt(e.target.value) || 0)}
+                              onChange={(e) => updateStock(product.inventory_id, product.id, parseInt(e.target.value) || 0)}
                               style={{ 
                                 width: '50px', 
                                 padding: '6px', 
@@ -312,13 +401,13 @@ export default function BranchDashboard({ products, categories }) {
                               }}
                             />
                             <button 
-                              onClick={() => updateStock(product.id, product.stock + 1)}
+                              onClick={() => updateStock(product.inventory_id, product.id, product.stock + 1)}
                               style={{ width: '32px', height: '32px', borderRadius: '8px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-secondary)' }}
                             >+</button>
                           </div>
                         </td>
                         <td style={{ padding: '20px 24px' }}>
-                          <button style={{ color: 'var(--primary)', fontWeight: 700, fontSize: '14px' }}>Save</button>
+                          <button style={{ color: 'var(--primary)', fontWeight: 700, fontSize: '14px' }}>{t('save')}</button>
                         </td>
                       </tr>
                     ))}
@@ -351,12 +440,12 @@ export default function BranchDashboard({ products, categories }) {
                 onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'var(--border-color)'; }}
               >
                 <div style={{ fontSize: '32px', marginBottom: '16px' }}>📁</div>
-                <h3 style={{ fontSize: '20px', fontWeight: 800, marginBottom: '8px' }}>{category}</h3>
+                <h3 style={{ fontSize: '20px', fontWeight: 800, marginBottom: '8px' }}>{t(category)}</h3>
                 <p style={{ color: 'var(--text-tertiary)', fontSize: '14px', marginBottom: '24px' }}>
-                  {inventory.filter(p => p.category === category).length} products available.
+                  {inventory.filter(p => p.category === category).length} {t('productsAvailable')}.
                 </p>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontWeight: 700, color: 'var(--primary)' }}>View Inventory</span>
+                  <span style={{ fontWeight: 700, color: 'var(--primary)' }}>{t('viewInventory')}</span>
                   <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'var(--bg-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>➜</div>
                 </div>
               </div>
@@ -387,8 +476,8 @@ export default function BranchDashboard({ products, categories }) {
             
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
               <div>
-                <h2 style={{ fontSize: '26px', fontWeight: 800, color: 'var(--text-primary)' }}>Add New Product</h2>
-                <p style={{ color: 'var(--text-tertiary)', fontSize: '14px' }}>Fill in the details to list a new item in your branch.</p>
+                <h2 style={{ fontSize: '26px', fontWeight: 800, color: 'var(--text-primary)' }}>{t('addNewProduct')}</h2>
+                <p style={{ color: 'var(--text-tertiary)', fontSize: '14px' }}>{t('fillDetails')}</p>
               </div>
               <button 
                 onClick={() => setShowAddModal(false)} 
@@ -402,7 +491,7 @@ export default function BranchDashboard({ products, categories }) {
               <div style={{ display: 'flex', gap: '24px' }}>
                 {/* Image Preview */}
                 <div style={{ flex: '0 0 120px' }}>
-                  <label style={{ display: 'block', marginBottom: '8px', fontSize: '13px', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Preview</label>
+                  <label style={{ display: 'block', marginBottom: '8px', fontSize: '13px', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>{t('preview')}</label>
                   <div style={{ width: '120px', height: '120px', borderRadius: '16px', background: 'var(--bg-secondary)', border: '2px dashed var(--border-color)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     {newProduct.image ? (
                       <img src={newProduct.image} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => e.target.src = 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=200'} />
@@ -415,7 +504,7 @@ export default function BranchDashboard({ products, categories }) {
                 {/* Basic Info */}
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '16px' }}>
                   <div>
-                    <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Product Name</label>
+                    <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>{t('productName')}</label>
                     <input 
                       required
                       type="text" 
@@ -426,7 +515,7 @@ export default function BranchDashboard({ products, categories }) {
                     />
                   </div>
                   <div>
-                    <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Image URL</label>
+                    <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>{t('imageUrl')}</label>
                     <input 
                       type="text" 
                       value={newProduct.image}
@@ -440,17 +529,17 @@ export default function BranchDashboard({ products, categories }) {
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                 <div>
-                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Category</label>
+                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>{t('category')}</label>
                   <select 
                     value={newProduct.category}
                     onChange={e => setNewProduct({...newProduct, category: e.target.value})}
                     style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', outline: 'none' }}
                   >
-                    {categories.map(c => <option key={c} value={c}>{c}</option>)}
+                    {categories.map(c => <option key={c} value={c}>{t(c)}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Unit</label>
+                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>{t('unit')}</label>
                   <input 
                     type="text" 
                     value={newProduct.unit}
@@ -463,7 +552,7 @@ export default function BranchDashboard({ products, categories }) {
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                 <div>
-                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Price (RWF)</label>
+                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>{t('price')} (RWF)</label>
                   <div style={{ position: 'relative' }}>
                     <input 
                       required
@@ -476,7 +565,7 @@ export default function BranchDashboard({ products, categories }) {
                   </div>
                 </div>
                 <div>
-                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Initial Stock</label>
+                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>{t('initialStock')}</label>
                   <input 
                     required
                     type="number" 
@@ -493,11 +582,11 @@ export default function BranchDashboard({ products, categories }) {
                   type="button"
                   onClick={() => setShowAddModal(false)}
                   style={{ flex: 1, padding: '14px', background: 'var(--bg-secondary)', color: 'var(--text-primary)', borderRadius: '14px', fontWeight: 700, transition: 'all 0.2s' }}
-                >Cancel</button>
+                >{t('cancel')}</button>
                 <button 
                   type="submit" 
                   style={{ flex: 2, padding: '14px', background: 'var(--primary)', color: 'white', borderRadius: '14px', fontWeight: 700, fontSize: '16px', boxShadow: '0 10px 15px -3px rgba(255, 107, 0, 0.3)', transition: 'all 0.2s' }}
-                >Create Product</button>
+                >{t('createProduct')}</button>
               </div>
             </form>
           </div>

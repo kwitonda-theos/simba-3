@@ -4,6 +4,7 @@ import { CartProvider } from './context/CartContext';
 import { LanguageProvider } from './context/LanguageContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { supabase } from './lib/supabase';
 import Header from './components/Header';
 import CartDrawer from './components/CartDrawer';
 import Footer from './components/Footer';
@@ -13,6 +14,8 @@ import CategoryPage from './pages/CategoryPage';
 import ProductPage from './pages/ProductPage';
 import CheckoutPage from './pages/CheckoutPage';
 import LoginPage from './pages/LoginPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import SignupChoicePage from './pages/SignupChoicePage';
 import CustomerSignupPage from './pages/CustomerSignupPage';
 import BranchManagerSignupPage from './pages/BranchManagerSignupPage';
@@ -56,16 +59,34 @@ function AppContent() {
   const { isBranchManager, user } = useAuth();
 
   useEffect(() => {
-    fetch('/simba_products.json')
-      .then(res => res.json())
-      .then(data => {
-        setProducts(data.products || []);
+    const fetchProducts = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .eq('is_active', true);
+
+        if (error) throw error;
+
+        // Map Supabase field names back to existing frontend names
+        const mappedProducts = (data || []).map(p => ({
+          ...p,
+          image: p.image_url 
+        }));
+
+        setProducts(mappedProducts);
+      } catch (err) {
+        console.error('Failed to load products from Supabase:', err.message);
+        // Fallback to local JSON
+        fetch('/simba_products (1).json')
+          .then(res => res.json())
+          .then(data => setProducts(data.products || []));
+      } finally {
         setLoading(false);
-      })
-      .catch(err => {
-        console.error('Failed to load products:', err);
-        setLoading(false);
-      });
+      }
+    };
+
+    fetchProducts();
   }, []);
 
   const categories = useMemo(() => {
@@ -115,6 +136,14 @@ function AppContent() {
             <Route
               path="/login"
               element={<LoginPage />}
+            />
+            <Route
+              path="/forgot-password"
+              element={<ForgotPasswordPage />}
+            />
+            <Route
+              path="/reset-password"
+              element={<ResetPasswordPage />}
             />
             <Route
               path="/signup"

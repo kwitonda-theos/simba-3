@@ -89,15 +89,15 @@ export default function Header({ onSearch }) {
             {isAuthenticated ? (
               <div className="user-nav" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', marginRight: '8px' }}>
-                  <span style={{ fontSize: '13px', fontWeight: 700 }}>Hi, {user.name}</span>
+                  <span style={{ fontSize: '13px', fontWeight: 700 }}>{t('hi')}, {user.name}</span>
                   {!isBranchManager && (
-                    <Link to="/my-orders" style={{ fontSize: '11px', color: 'var(--primary)', fontWeight: 600 }}>My Orders</Link>
+                    <Link to="/my-orders" style={{ fontSize: '11px', color: 'var(--primary)', fontWeight: 600 }}>{t('myOrders')}</Link>
                   )}
                 </div>
                 <button
                   className="header-action-btn"
                   onClick={() => logout()}
-                  title="Logout"
+                  title={t('logout')}
                 >
                   🚪
                 </button>

@@ -92,7 +92,7 @@ export default function CategoryPage({ products, categories }) {
 
   const pageTitle = decodedCategory === 'all'
     ? (searchQuery ? `"${searchQuery}"` : t('allProducts'))
-    : `${t('productsIn')} ${decodedCategory}`;
+    : `${t('productsIn')} ${t(decodedCategory)}`;
 
   return (
     <div id="category-page">
@@ -101,9 +101,9 @@ export default function CategoryPage({ products, categories }) {
       <div className="container" style={{ paddingTop: '24px', paddingBottom: '48px' }}>
         {/* Breadcrumb */}
         <div className="breadcrumb">
-          <a href="/">{t('home')}</a>
+          <Link to="/">{t('home')}</Link>
           <span className="breadcrumb-separator">›</span>
-          <span>{decodedCategory === 'all' ? t('allProducts') : decodedCategory}</span>
+          <span>{decodedCategory === 'all' ? t('allProducts') : t(decodedCategory)}</span>
         </div>
 
         <div className="section-header">

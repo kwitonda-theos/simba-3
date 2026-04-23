@@ -36,13 +36,13 @@ export default function SignupChoicePage() {
         >
           <div style={{ fontSize: '48px', marginBottom: '24px' }}>🛒</div>
           <h2 style={{ fontSize: '24px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '12px' }}>
-            I am a Customer
+            {t('customer')}
           </h2>
           <p style={{ color: 'var(--text-tertiary)', fontSize: '15px', lineHeight: '1.6' }}>
-            Shop from over 500+ fresh products and get them delivered to your doorstep.
+            {t('customerDescription')}
           </p>
           <div style={{ marginTop: '32px', color: 'var(--primary)', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-            Sign Up as Customer ➜
+            {t('createCustomerAccount')} ➜
           </div>
         </Link>
 
@@ -62,13 +62,13 @@ export default function SignupChoicePage() {
         >
           <div style={{ fontSize: '48px', marginBottom: '24px' }}>🏢</div>
           <h2 style={{ fontSize: '24px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '12px' }}>
-            I am a Branch Manager
+            {t('branchManager')}
           </h2>
           <p style={{ color: 'var(--text-tertiary)', fontSize: '15px', lineHeight: '1.6' }}>
-            Manage inventory, track branch performance, and handle customer orders.
+            {t('branchManagerDescription')}
           </p>
           <div style={{ marginTop: '32px', color: 'var(--primary)', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-            Sign Up as Manager ➜
+            {t('createManagerAccount')} ➜
           </div>
         </Link>
       </div>

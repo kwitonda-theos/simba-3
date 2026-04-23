@@ -29,7 +29,7 @@ export default function ProductPage({ products }) {
       <div className="container">
         <div className="no-results" style={{ padding: '80px 0' }}>
           <div className="no-results-icon">😕</div>
-          <h3 className="no-results-title">Product not found</h3>
+          <h3 className="no-results-title">{t('productNotFound')}</h3>
           <Link to="/" className="hero-cta" style={{ marginTop: '16px', display: 'inline-flex' }}>
             {t('backToHome')}
           </Link>
@@ -55,7 +55,7 @@ export default function ProductPage({ products }) {
         <div className="breadcrumb">
           <Link to="/">{t('home')}</Link>
           <span className="breadcrumb-separator">›</span>
-          <Link to={`/category/${encodeURIComponent(product.category)}`}>{product.category}</Link>
+          <Link to={`/category/${encodeURIComponent(product.category)}`}>{t(product.category)}</Link>
           <span className="breadcrumb-separator">›</span>
           <span>{product.name}</span>
         </div>
@@ -71,7 +71,7 @@ export default function ProductPage({ products }) {
             </div>
             <div className="product-detail-info">
               <span className="product-detail-category">
-                {getCategoryIcon(product.category)} {product.category}
+                {getCategoryIcon(product.category)} {t(product.category)}
               </span>
               <h1 className="product-detail-name">{product.name}</h1>
               <div className="product-detail-price">
@@ -101,7 +101,7 @@ export default function ProductPage({ products }) {
                   <div className="product-meta-icon">🏷️</div>
                   <div>
                     <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{t('category')}</div>
-                    <div>{product.category}</div>
+                    <div>{t(product.category)}</div>
                   </div>
                 </div>
               </div>

@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 
 export default function LoginPage() {
-  const { login } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
@@ -12,17 +12,44 @@ export default function LoginPage() {
     email: '',
     password: '',
   });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const from = location.state?.from?.pathname || '/';
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    login({
-      email: formData.email,
-      role: 'customer',
-      name: formData.email.split('@')[0]
-    });
-    navigate(from, { replace: true });
+    setError('');
+    setLoading(true);
+
+    try {
+      const { error: loginError } = await login(formData.email, formData.password);
+      
+      if (loginError) {
+        // Provide clear error messages based on Supabase error codes
+        if (loginError.includes('Invalid login credentials')) {
+          setError('Invalid email or password. Please try again.');
+        } else if (loginError.includes('Email not confirmed')) {
+          setError('Please confirm your email address before logging in.');
+        } else {
+          setError(loginError);
+        }
+      } else {
+        navigate(from, { replace: true });
+      }
+    } catch (err) {
+      setError('An unexpected error occurred. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setError('');
+    const { error: googleError } = await loginWithGoogle();
+    if (googleError) {
+      setError(googleError);
+    }
   };
 
   const handleChange = (e) => {
@@ -62,12 +89,27 @@ export default function LoginPage() {
             👤
           </div>
           <h1 style={{ fontSize: '28px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '8px' }}>
-            {t('welcomeBack') || 'Welcome Back'}
+            {t('welcomeBack')}
           </h1>
           <p style={{ color: 'var(--text-tertiary)', fontSize: '15px' }}>
-            {t('loginSubtitle') || 'Please enter your details to sign in'}
+            {t('loginSubtitle')}
           </p>
         </div>
+
+        {error && (
+          <div style={{ 
+            background: 'var(--accent-red-glow)', 
+            color: 'var(--accent-red)', 
+            padding: '12px 16px', 
+            borderRadius: '12px', 
+            marginBottom: '20px',
+            fontSize: '14px',
+            fontWeight: 500,
+            border: '1px solid rgba(239, 68, 68, 0.2)'
+          }}>
+            ⚠️ {error}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div className="form-group">
@@ -82,17 +124,18 @@ export default function LoginPage() {
               onChange={handleChange}
               placeholder="name@example.com"
               required
+              disabled={loading}
               style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none', transition: 'border-color 0.2s' }}
             />
           </div>
           <div className="form-group">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
               <label className="form-label" style={{ fontWeight: 600 }}>
-                {t('password') || 'Password'}
+                {t('password')}
               </label>
-              <a href="#" style={{ fontSize: '13px', color: 'var(--primary)', fontWeight: 600 }}>
-                {t('forgotPassword') || 'Forgot password?'}
-              </a>
+              <Link to="/forgot-password" style={{ fontSize: '13px', color: 'var(--primary)', fontWeight: 600 }}>
+                {t('forgotPassword')}
+              </Link>
             </div>
             <input
               type="password"
@@ -102,44 +145,70 @@ export default function LoginPage() {
               onChange={handleChange}
               placeholder="••••••••"
               required
+              disabled={loading}
               style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none' }}
             />
           </div>
           
-          <button type="submit" className="hero-cta" style={{ 
-            width: '100%', 
-            marginTop: '8px', 
-            padding: '14px', 
-            borderRadius: '12px', 
-            fontSize: '16px', 
-            fontWeight: 700,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px'
-          }}>
-            {t('login') || 'Sign In'} ➜
+          <button 
+            type="submit" 
+            className="hero-cta" 
+            disabled={loading}
+            style={{ 
+              width: '100%', 
+              marginTop: '8px', 
+              padding: '14px', 
+              borderRadius: '12px', 
+              fontSize: '16px', 
+              fontWeight: 700,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              opacity: loading ? 0.7 : 1,
+              cursor: loading ? 'not-allowed' : 'pointer'
+            }}
+          >
+            {loading ? <span className="spinner" style={{ width: '20px', height: '20px' }} /> : (t('login') + ' ➜')}
           </button>
         </form>
 
         <div style={{ position: 'relative', margin: '32px 0', textAlign: 'center' }}>
           <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: '1px', background: 'var(--border-color)', zIndex: 1 }}></div>
           <span style={{ position: 'relative', zIndex: 2, background: 'var(--bg-card)', padding: '0 12px', color: 'var(--text-tertiary)', fontSize: '13px', fontWeight: 500 }}>
-            {t('orContinueWith') || 'OR CONTINUE WITH'}
+            {t('orContinueWith')}
           </span>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-          <button style={{ padding: '10px', borderRadius: '12px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '14px', fontWeight: 600, color: 'var(--text-secondary)' }}>
-            Google
-          </button>
-          <button style={{ padding: '10px', borderRadius: '12px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '14px', fontWeight: 600, color: 'var(--text-secondary)' }}>
-            Apple
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '12px' }}>
+          <button 
+            type="button"
+            onClick={handleGoogleLogin}
+            style={{ 
+              padding: '12px', 
+              borderRadius: '12px', 
+              border: '1px solid var(--border-color)', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              gap: '10px', 
+              fontSize: '15px', 
+              fontWeight: 600, 
+              color: 'var(--text-primary)',
+              background: 'var(--bg-card)',
+              transition: 'all 0.2s',
+              cursor: 'pointer'
+            }}
+            onMouseOver={(e) => e.currentTarget.style.background = 'var(--bg-secondary)'}
+            onMouseOut={(e) => e.currentTarget.style.background = 'var(--bg-card)'}
+          >
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style={{ width: '18px' }} />
+            Continue with Google
           </button>
         </div>
 
         <p style={{ textAlign: 'center', marginTop: '32px', color: 'var(--text-secondary)', fontSize: '15px' }}>
-          {t('noAccount') || "Don't have an account?"} <Link to="/signup" style={{ color: 'var(--primary)', fontWeight: 700 }}>{t('signup') || 'Create Account'}</Link>
+          {t('noAccount')} <Link to="/signup" style={{ color: 'var(--primary)', fontWeight: 700 }}>{t('signup')}</Link>
         </p>
       </div>
     </div>
