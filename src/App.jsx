@@ -80,7 +80,7 @@ function AppContent() {
         if (sbError) throw sbError;
 
         // 2. Fetch from JSON to get inStock info
-        const response = await fetch('/simba_products (1).json');
+        const response = await fetch('/simba_products.json');
         const localData = await response.json();
         const jsonProducts = localData.products || [];
         
@@ -109,7 +109,7 @@ function AppContent() {
       } catch (err) {
         console.error('Data loading error:', err.message);
         try {
-          const response = await fetch('/simba_products (1).json');
+          const response = await fetch('/simba_products.json');
           const localData = await response.json();
           setProducts((localData.products || []).map(p => ({
             ...p,
