@@ -4,6 +4,7 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
+import Icon from './Icon';
 
 export default function Header({ onSearch }) {
   const [searchQuery, setSearchQuery] = useState('');
@@ -31,7 +32,7 @@ export default function Header({ onSearch }) {
     <header className="header" id="site-header">
       <div className="container">
         <div className="header-top">
-          <span>📍 {t('kigali')} | {t('freeDelivery')}</span>
+          <span><Icon name="mapPin" size={14} style={{ marginRight: '4px' }} /> {t('kigali')} | {t('freeDelivery')}</span>
           <div className="header-top-actions">
             <div className="lang-switcher" id="language-switcher">
               <button
@@ -55,7 +56,9 @@ export default function Header({ onSearch }) {
 
         <div className="header-main">
           <Link to="/" className="logo" id="logo">
-            <div className="logo-icon">S</div>
+            <div className="logo-icon">
+              <Icon name="cart" size={20} style={{ color: 'white' }} />
+            </div>
             Simba
           </Link>
 
@@ -70,7 +73,7 @@ export default function Header({ onSearch }) {
                 id="search-input"
               />
               <button type="submit" className="search-btn" id="search-btn">
-                🔍 {t('searchBtn')}
+                <Icon name="search" size={18} style={{ marginRight: '6px' }} /> {t('searchBtn')}
               </button>
             </div>
           </form>
@@ -83,7 +86,7 @@ export default function Header({ onSearch }) {
               id="theme-toggle"
               aria-label="Toggle dark mode"
             >
-              {theme === 'dark' ? '🌙' : '☀️'}
+              {theme === 'dark' ? '☀️' : '🌙'}
             </button>
 
             {isAuthenticated ? (
@@ -99,12 +102,12 @@ export default function Header({ onSearch }) {
                   onClick={() => logout()}
                   title={t('logout')}
                 >
-                  🚪
+                  <Icon name="logout" size={20} />
                 </button>
               </div>
             ) : (
               <Link to="/login" className="header-action-btn" id="login-btn">
-                👤 <span>{t('login') || 'Login'}</span>
+                <Icon name="user" size={20} /> <span>{t('login') || 'Login'}</span>
               </Link>
             )}
 
@@ -113,7 +116,7 @@ export default function Header({ onSearch }) {
               onClick={() => setIsCartOpen(true)}
               id="cart-btn"
             >
-              🛒 <span>{t('cart')}</span>
+              <Icon name="cart" size={20} /> <span>{t('cart')}</span>
               {cartCount > 0 && (
                 <span className="cart-badge" key={cartCount}>{cartCount}</span>
               )}

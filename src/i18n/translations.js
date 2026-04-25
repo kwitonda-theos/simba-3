@@ -14,12 +14,12 @@ export const translations = {
 
     // Hero
     heroBadge: "🛒 Rwanda's #1 Online Supermarket",
-    heroTitle: "Fresh Groceries Delivered to Your Door",
-    heroSubtitle: "Shop from 552+ products across 9 categories. Fast delivery across Kigali.",
+    heroTitle: "Fresh Groceries Ready for Pickup",
+    heroSubtitle: "Shop from 552+ products across 9 categories. Pick up from any branch in Kigali.",
     heroCta: "Shop Now",
     heroProducts: "Products",
     heroCategories: "Categories",
-    heroDelivery: "Fast Delivery",
+    heroDelivery: "Fast Pickup",
 
     // Products
     featuredProducts: "Featured Products",
@@ -80,7 +80,7 @@ export const translations = {
 
     // Checkout
     checkout: "Checkout",
-    deliveryInfo: "Delivery Information",
+    deliveryInfo: "Pickup Information",
     firstName: "First Name",
     lastName: "Last Name",
     email: "Email Address",
@@ -89,15 +89,15 @@ export const translations = {
     city: "City",
     district: "District",
     selectDistrict: "Select District",
-    notes: "Delivery Notes (Optional)",
-    notesPlaceholder: "Any special instructions...",
+    notes: "Special Instructions",
+    notesPlaceholder: "Any special instructions for preparation...",
     paymentMethod: "Payment Method",
     momoMTN: "MTN Mobile Money",
     momoMTNDesc: "Pay with your MTN MoMo account",
     momoAirtel: "Airtel Money",
     momoAirtelDesc: "Pay with your Airtel Money account",
-    cashDelivery: "Cash on Delivery",
-    cashDeliveryDesc: "Pay when you receive your order",
+    cashDelivery: "Pay at Pickup",
+    cashDeliveryDesc: "Pay the balance when you pick up",
     momoNumber: "Mobile Money Number",
     momoNumberPlaceholder: "07X XXX XXXX",
     creditCard: "Credit / Debit Card",
@@ -108,7 +108,7 @@ export const translations = {
     cardName: "Cardholder Name",
     cardNamePlaceholder: "Name on card",
     cardSecurityNote: "Your payment information is encrypted and secure",
-    placeOrder: "Place Order",
+    placeOrder: "Confirm & Pay Deposit",
     orderSummary: "Order Summary",
     processing: "Processing...",
     login: "Login",
@@ -121,6 +121,13 @@ export const translations = {
     pickupBranch: "Pickup Branch",
     selectBranchForPickup: "Select Branch for Pickup",
     mainBranch: "Main Branch",
+    pickupTime: "Pickup Time",
+    depositAmount: "Deposit Required",
+    payDeposit: "Pay 500 RWF Deposit & Confirm",
+    pickupDetails: "Pickup Details",
+    depositInfo: "A small deposit of 500 RWF is required via MoMo to confirm your order and start preparation.",
+    preparing: "Preparing",
+    readyForPickup: "Ready for Pickup",
 
     // Districts
     Gasabo: "Gasabo",
@@ -129,12 +136,12 @@ export const translations = {
 
     // Confirmation
     orderConfirmed: "Order Confirmed!",
-    orderConfirmedText: "Thank you for your order. You will receive a confirmation SMS shortly.",
+    orderConfirmedText: "Your order has been sent to the branch for preparation. You will receive an SMS when it's ready for pickup.",
     orderNumber: "Order Number",
     backToHome: "Back to Home",
 
     // Footer
-    aboutSimba: "Rwanda's most trusted online supermarket. Quality products, great prices, delivered to your doorstep in Kigali.",
+    aboutSimba: "Rwanda's most trusted online supermarket. Quality products, great prices, pickup from any Kigali branch.",
     quickLinks: "Quick Links",
     home: "Home",
     shop: "Shop",
@@ -199,6 +206,7 @@ export const translations = {
     analytics: "Analytics",
     recentTransactions: "Recent Transactions",
     id: "ID",
+    date: "Date",
     amount: "Amount",
     status: "Status",
     actions: "Actions",
@@ -225,6 +233,19 @@ export const translations = {
     cancelled: "Cancelled",
     currentDate: "Current Date",
     welcomeBackManager: "Welcome back",
+    processing: "Processing",
+    rateExperience: "Rate Experience",
+    submitReview: "Submit Review",
+    leaveComment: "Leave a comment (optional)",
+    ratingRequired: "Please select a rating",
+    reviewSubmitted: "Thank you for your feedback!",
+    flagCustomer: "Flag No-Show",
+    customerFlagged: "Customer flagged for no-show",
+    highDepositWarning: "A higher deposit is required due to previous no-shows.",
+    confirmPickup: "Confirm Pickup",
+    pickedUpAt: "Picked up at",
+    newOrderReceived: "New Order Received!",
+    noShow: "No-Show",
 
     // Misc
     kigali: "Kigali, Rwanda",
@@ -245,12 +266,12 @@ export const translations = {
 
     // Hero
     heroBadge: "🛒 Le Supermarché en ligne #1 du Rwanda",
-    heroTitle: "Des Produits Frais Livrés à Votre Porte",
-    heroSubtitle: "Faites vos courses parmi 552+ produits dans 9 catégories. Livraison rapide à Kigali.",
+    heroTitle: "Des Produits Frais Prêts pour le Retrait",
+    heroSubtitle: "Faites vos courses parmi 552+ produits dans 9 catégories. Retrait dans n'importe quelle succursale à Kigali.",
     heroCta: "Acheter Maintenant",
     heroProducts: "Produits",
     heroCategories: "Catégories",
-    heroDelivery: "Livraison Rapide",
+    heroDelivery: "Retrait Rapide",
 
     // Products
     featuredProducts: "Produits Vedettes",
@@ -311,7 +332,7 @@ export const translations = {
 
     // Checkout
     checkout: "Paiement",
-    deliveryInfo: "Informations de Livraison",
+    deliveryInfo: "Informations de retrait",
     firstName: "Prénom",
     lastName: "Nom",
     email: "Adresse Email",
@@ -320,15 +341,15 @@ export const translations = {
     city: "Ville",
     district: "District",
     selectDistrict: "Sélectionner le District",
-    notes: "Notes de Livraison (Optionnel)",
-    notesPlaceholder: "Instructions spéciales...",
+    notes: "Instructions spéciales",
+    notesPlaceholder: "Toutes instructions spéciales pour la préparation...",
     paymentMethod: "Mode de Paiement",
     momoMTN: "MTN Mobile Money",
     momoMTNDesc: "Payez avec votre compte MTN MoMo",
     momoAirtel: "Airtel Money",
     momoAirtelDesc: "Payez avec votre compte Airtel Money",
-    cashDelivery: "Paiement à la Livraison",
-    cashDeliveryDesc: "Payez à la réception de votre commande",
+    cashDelivery: "Payer au retrait",
+    cashDeliveryDesc: "Payer le solde lors du retrait",
     momoNumber: "Numéro Mobile Money",
     momoNumberPlaceholder: "07X XXX XXXX",
     creditCard: "Carte de Crédit / Débit",
@@ -339,7 +360,7 @@ export const translations = {
     cardName: "Nom du Titulaire",
     cardNamePlaceholder: "Nom sur la carte",
     cardSecurityNote: "Vos informations de paiement sont cryptées et sécurisées",
-    placeOrder: "Passer la Commande",
+    placeOrder: "Confirmer et payer l'acompte",
     orderSummary: "Résumé de la Commande",
     processing: "Traitement...",
     login: "Connexion",
@@ -352,6 +373,13 @@ export const translations = {
     pickupBranch: "Succursale de retrait",
     selectBranchForPickup: "Sélectionner la succursale pour le retrait",
     mainBranch: "Succursale principale",
+    pickupTime: "Heure de retrait",
+    depositAmount: "Acompte requis",
+    payDeposit: "Payer 500 RWF d'acompte et confirmer",
+    pickupDetails: "Détails du retrait",
+    depositInfo: "Un petit acompte de 500 RWF est requis via MoMo pour confirmer votre commande et commencer la préparation.",
+    preparing: "En préparation",
+    readyForPickup: "Prêt pour le retrait",
 
     // Districts
     Gasabo: "Gasabo",
@@ -360,12 +388,12 @@ export const translations = {
 
     // Confirmation
     orderConfirmed: "Commande Confirmée!",
-    orderConfirmedText: "Merci pour votre commande. Vous recevrez un SMS de confirmation sous peu.",
+    orderConfirmedText: "Votre commande a été envoyée à la succursale pour préparation. Vous recevrez un SMS lorsqu'elle sera prête.",
     orderNumber: "Numéro de Commande",
     backToHome: "Retour à l'Accueil",
 
     // Footer
-    aboutSimba: "Le supermarché en ligne le plus fiable du Rwanda. Produits de qualité, prix compétitifs, livrés à votre porte à Kigali.",
+    aboutSimba: "Le supermarché en ligne le plus fiable du Rwanda. Produits de qualité, retrait dans n'importe quelle succursale de Kigali.",
     quickLinks: "Liens Rapides",
     home: "Accueil",
     shop: "Boutique",
@@ -430,6 +458,7 @@ export const translations = {
     analytics: "Analyses",
     recentTransactions: "Transactions Récentes",
     id: "ID",
+    date: "Date",
     amount: "Montant",
     status: "Statut",
     actions: "Actions",
@@ -456,6 +485,19 @@ export const translations = {
     cancelled: "Annulé",
     currentDate: "Date actuelle",
     welcomeBackManager: "Bon retour",
+    processing: "En préparation",
+    rateExperience: "Évaluer l'expérience",
+    submitReview: "Soumettre l'avis",
+    leaveComment: "Laisser un commentaire (facultatif)",
+    ratingRequired: "Veuillez sélectionner une note",
+    reviewSubmitted: "Merci pour votre avis !",
+    flagCustomer: "Signaler une absence",
+    customerFlagged: "Client signalé pour non-présentation",
+    highDepositWarning: "Un acompte plus élevé est requis en raison d'absences précédentes.",
+    confirmPickup: "Confirmer le retrait",
+    pickedUpAt: "Retiré à",
+    newOrderReceived: "Nouvelle commande reçue !",
+    noShow: "Non-présentation",
 
     // Misc
     kigali: "Kigali, Rwanda",
@@ -476,12 +518,12 @@ export const translations = {
 
     // Hero
     heroBadge: "🛒 Isoko ya #1 ku rubuga rwa interineti mu Rwanda",
-    heroTitle: "Ibicuruzwa Bishya Bigatangwa ku Muryango Wawe",
-    heroSubtitle: "Gura mu bicuruzwa 552+ mu byiciro 9. Ibyaguzwe bigatangwa vuba muri Kigali.",
+    heroTitle: "Ibicuruzwa Bishya Bitereye Gufatwa",
+    heroSubtitle: "Gura mu bicuruzwa 552+ mu byiciro 9. Fata ibyo waguze ku ishami rya Simba iryo ariryo ryose muri Kigali.",
     heroCta: "Gura Nonaha",
     heroProducts: "Ibicuruzwa",
     heroCategories: "Ibyiciro",
-    heroDelivery: "Gutanga Byihuse",
+    heroDelivery: "Gufata Vuba",
 
     // Products
     featuredProducts: "Ibicuruzwa Byihariye",
@@ -542,7 +584,7 @@ export const translations = {
 
     // Checkout
     checkout: "Kwishyura",
-    deliveryInfo: "Amakuru y'Ubugurire",
+    deliveryInfo: "Amakuru yo gufata ibyo waguze",
     firstName: "Izina ry'Idini",
     lastName: "Izina ry'Umuryango",
     email: "Aderesi ya Email",
@@ -551,15 +593,15 @@ export const translations = {
     city: "Umujyi",
     district: "Akarere",
     selectDistrict: "Hitamo Akarere",
-    notes: "Icyitonderwa (Ntibisabwa)",
-    notesPlaceholder: "Amabwiriza adasanzwe...",
+    notes: "Icyitonderwa",
+    notesPlaceholder: "Amabwiriza yo kubitegura...",
     paymentMethod: "Uburyo bwo Kwishyura",
     momoMTN: "MTN Mobile Money",
     momoMTNDesc: "Ishyura ukoresheje konti yawe ya MTN MoMo",
     momoAirtel: "Airtel Money",
     momoAirtelDesc: "Ishyura ukoresheje konti yawe ya Airtel Money",
-    cashDelivery: "Kwishyura ku Bwinjirire",
-    cashDeliveryDesc: "Ishyura igihe uhawe ibyo waguriye",
+    cashDelivery: "Kwishyura ugifata",
+    cashDeliveryDesc: "Ishyura amafaranga asigaye mu gihe uje gufata ibyo waguze",
     momoNumber: "Nimero ya Mobile Money",
     momoNumberPlaceholder: "07X XXX XXXX",
     creditCard: "Ikarita ya Banki",
@@ -570,7 +612,7 @@ export const translations = {
     cardName: "Izina ry'Umunyamwuga",
     cardNamePlaceholder: "Izina ku ikarita",
     cardSecurityNote: "Amakuru y'ubwishyu yawe ashimangiye kandi afite umutekano",
-    placeOrder: "Kohereza Ibyo Waguriye",
+    placeOrder: "Ishyura ingwate wemeze",
     orderSummary: "Incamake y'Ibyo Waguriye",
     processing: "Birakurura...",
     login: "Kwinjira",
@@ -583,6 +625,13 @@ export const translations = {
     pickupBranch: "Ishami ryo gufatiraho",
     selectBranchForPickup: "Hitamo ishami ryo gufatiraho",
     mainBranch: "Ishami rikuru",
+    pickupTime: "Igihe cyo gufatira",
+    depositAmount: "Ingwate isabwa",
+    payDeposit: "Ishyura 500 RWF wemeze",
+    pickupDetails: "Ibisobanuro",
+    depositInfo: "Ugomba kwishyura 500 RWF nk'ingwate ya MoMo kugirango batangire gutegura ibyo watumije.",
+    preparing: "Birategurwa",
+    readyForPickup: "Byiteguye gufatwa",
 
     // Districts
     Gasabo: "Gasabo",
@@ -591,12 +640,12 @@ export const translations = {
 
     // Confirmation
     orderConfirmed: "Ibyo Waguriye Byemejwe!",
-    orderConfirmedText: "Urakoze kuba waguriye. Uzabona ubutumwa bwa SMS bukugeza amakuru vuba.",
+    orderConfirmedText: "Ibyo waguze byoherejwe ku ishami rya Simba kugirango babitegure. Uzabona ubutumwa bwa SMS mu gihe byaba byiteguye.",
     orderNumber: "Nomero y'Ibyo Waguriye",
     backToHome: "Subira ku Ntangiriro",
 
     // Footer
-    aboutSimba: "Isoko ryizewe cyane mu Rwanda ryo ku rubuga rwa interineti. Ibicuruzwa byiza, igiciro cyiza, bigatangwa ku muryango wawe muri Kigali.",
+    aboutSimba: "Isoko ryizewe cyane mu Rwanda ryo ku rubuga rwa interineti. Ibicuruzwa byiza, fata ibyo waguze ku ishami rya Simba muri Kigali.",
     quickLinks: "Aho Ujya Vuba",
     home: "Ahabanza",
     shop: "Isoko",
@@ -641,7 +690,7 @@ export const translations = {
     termsAgreement: "Mugufungura konti, wemeye",
     termsOfService: "Amabwiriza agenga imikoreshereze",
     privacyPolicy: "Politiki y'ibanga",
-    selectYourBranch: "Hitamo ishami ryawe",
+    selectYourBranch: "Hitamo ishami yawe",
     chooseABranch: "Hitamo ishami",
 
     // My Orders
@@ -661,6 +710,7 @@ export const translations = {
     analytics: "Imibare",
     recentTransactions: "Iheruka kugurwa",
     id: "ID",
+    date: "Itariki",
     amount: "Ayishyuwe",
     status: "Imiterere",
     actions: "Ibikorwa",
@@ -687,6 +737,19 @@ export const translations = {
     cancelled: "Byahagaritswe",
     currentDate: "Itariki y'uyu munsi",
     welcomeBackManager: "Murakaza neza",
+    processing: "Birategurwa",
+    rateExperience: "Tanga amanota",
+    submitReview: "Ohereza amasesengura",
+    leaveComment: "Siga igitekerezo (binyuze)",
+    ratingRequired: "Nyamuneka hitamo amanota",
+    reviewSubmitted: "Murakoze ku gitekerezo cyanyu!",
+    flagCustomer: "Tanga ikimenyetso cy'utaraje",
+    customerFlagged: "Umukiriya yashyizweho ikimenyetso",
+    highDepositWarning: "Ingwate isabwa yiyongereye kubera ko utigeze uza gufata ibyo watumije mbere.",
+    confirmPickup: "Emeza gufata",
+    pickedUpAt: "Byafashwe saa",
+    newOrderReceived: "Icyo waguze gishya cyakiriwe!",
+    noShow: "Ntiyaje",
 
     // Misc
     kigali: "Kigali, u Rwanda",

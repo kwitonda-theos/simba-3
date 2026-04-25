@@ -4,6 +4,7 @@ import { useCart } from '../context/CartContext';
 import { useLanguage } from '../context/LanguageContext';
 import { formatPrice, generateImageUrl, getCategoryIcon } from '../utils/helpers';
 import ProductGrid from '../components/ProductGrid';
+import Icon from '../components/Icon';
 
 export default function ProductPage({ products }) {
   const { productId } = useParams();
@@ -80,7 +81,7 @@ export default function ProductPage({ products }) {
 
               <div className="product-detail-meta">
                 <div className="product-meta-item">
-                  <div className="product-meta-icon">📦</div>
+                  <div className="product-meta-icon"><Icon name="box" size={20} /></div>
                   <div>
                     <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{t('unit')}</div>
                     <div>{product.unit}</div>
@@ -88,7 +89,7 @@ export default function ProductPage({ products }) {
                 </div>
                 <div className="product-meta-item">
                   <div className="product-meta-icon">
-                    {product.inStock ? '✅' : '❌'}
+                    {product.inStock ? <Icon name="check" size={20} style={{ color: 'var(--accent-emerald)' }} /> : <Icon name="x" size={20} style={{ color: 'var(--accent-red)' }} />}
                   </div>
                   <div>
                     <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{t('availability')}</div>
@@ -98,7 +99,7 @@ export default function ProductPage({ products }) {
                   </div>
                 </div>
                 <div className="product-meta-item">
-                  <div className="product-meta-icon">🏷️</div>
+                  <div className="product-meta-icon"><Icon name="tag" size={20} /></div>
                   <div>
                     <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{t('category')}</div>
                     <div>{t(product.category)}</div>
@@ -110,20 +111,20 @@ export default function ProductPage({ products }) {
                 {inCart ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: 1 }}>
                     <div className="quantity-controls" style={{ transform: 'scale(1.3)', transformOrigin: 'left' }}>
-                      <button className="qty-btn" onClick={() => updateQuantity(product.id, quantity - 1)}>−</button>
+                      <button className="qty-btn" onClick={() => updateQuantity(product.id, quantity - 1)}><Icon name="minus" size={14} /></button>
                       <span className="qty-value">{quantity}</span>
-                      <button className="qty-btn" onClick={() => updateQuantity(product.id, quantity + 1)}>+</button>
+                      <button className="qty-btn" onClick={() => updateQuantity(product.id, quantity + 1)}><Icon name="plus" size={14} /></button>
                     </div>
                     <span style={{ color: 'var(--accent-emerald)', fontWeight: 600, fontSize: '14px' }}>
-                      ✅ {t('added')}
+                      <Icon name="check" size={16} style={{ marginRight: '4px' }} /> {t('added')}
                     </span>
                   </div>
                 ) : (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', flex: 1 }}>
                     <div className="quantity-controls" style={{ transform: 'scale(1.3)', transformOrigin: 'left' }}>
-                      <button className="qty-btn" onClick={() => setSelectedQty(Math.max(1, selectedQty - 1))}>−</button>
+                      <button className="qty-btn" onClick={() => setSelectedQty(Math.max(1, selectedQty - 1))}><Icon name="minus" size={14} /></button>
                       <span className="qty-value">{selectedQty}</span>
-                      <button className="qty-btn" onClick={() => setSelectedQty(selectedQty + 1)}>+</button>
+                      <button className="qty-btn" onClick={() => setSelectedQty(selectedQty + 1)}><Icon name="plus" size={14} /></button>
                     </div>
                     <button
                       className={`btn-primary-lg ${justAdded ? 'added' : ''}`}
@@ -131,7 +132,7 @@ export default function ProductPage({ products }) {
                       id="product-add-cart"
                       style={justAdded ? { background: 'var(--accent-emerald)' } : {}}
                     >
-                      {justAdded ? '✓ ' + t('added') : '🛒 ' + t('addToCart')}
+                      {justAdded ? <><Icon name="check" size={20} /> {t('added')}</> : <><Icon name="cart" size={20} /> {t('addToCart')}</>}
                     </button>
                   </div>
                 )}

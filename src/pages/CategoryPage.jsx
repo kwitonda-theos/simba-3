@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams, Link } from 'react-router-dom';
 import CategoryNav from '../components/CategoryNav';
 import ProductGrid from '../components/ProductGrid';
 import FilterPanel from '../components/FilterPanel';

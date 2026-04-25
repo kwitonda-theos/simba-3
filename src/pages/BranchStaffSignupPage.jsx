@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { supabase } from '../lib/supabase';
+import Icon from '../components/Icon';
 
 const BRANCHES = [
   "Simba Centenary",
@@ -18,7 +19,7 @@ const BRANCHES = [
   "Simba Rebero"
 ];
 
-export default function BranchManagerSignupPage() {
+export default function BranchStaffSignupPage() {
   const { signup } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
@@ -39,8 +40,7 @@ export default function BranchManagerSignupPage() {
     try {
       let branches = [];
       
-      // Look up the branch UUID to avoid database type errors in triggers
-      const { data: selectedBranch, error: branchError } = await supabase
+      const { data: selectedBranch } = await supabase
         .from('branches')
         .select('id')
         .eq('name', formData.branch)
@@ -48,15 +48,13 @@ export default function BranchManagerSignupPage() {
 
       if (selectedBranch?.id) {
         branches = [selectedBranch.id];
-      } else {
-        console.warn('Branch UUID not found for:', formData.branch, branchError);
       }
 
       const { error: signupError } = await signup({
         name: formData.name,
         email: formData.email,
         password: formData.password,
-        role: 'branch-manager',
+        role: 'branch-staff',
         branches: branches,
         metadata: {
           branch_name: formData.branch,
@@ -108,15 +106,15 @@ export default function BranchManagerSignupPage() {
             alignItems: 'center', 
             justifyContent: 'center', 
             margin: '0 auto 16px',
-            fontSize: '32px'
+            color: 'var(--primary)'
           }}>
-            🏢
+            <Icon name="users" size={32} />
           </div>
           <h1 style={{ fontSize: '28px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '8px' }}>
-            Branch Manager Sign Up
+            Branch Staff Sign Up
           </h1>
           <p style={{ color: 'var(--text-tertiary)', fontSize: '15px' }}>
-            Manage your branch operations efficiently
+            Join your branch team to process orders
           </p>
         </div>
 
@@ -146,7 +144,7 @@ export default function BranchManagerSignupPage() {
               className="form-input"
               value={formData.name}
               onChange={handleChange}
-              placeholder="Manager Name"
+              placeholder="Staff Name"
               required
               disabled={loading}
               style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none' }}
@@ -163,7 +161,7 @@ export default function BranchManagerSignupPage() {
               className="form-input"
               value={formData.email}
               onChange={handleChange}
-              placeholder="manager@simba.rw"
+              placeholder="staff@simba.rw"
               required
               disabled={loading}
               style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none' }}
@@ -183,7 +181,7 @@ export default function BranchManagerSignupPage() {
               disabled={loading}
               style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none', background: 'var(--bg-card)', color: 'var(--text-primary)' }}
             >
-              <option value="">Choose a branch to manage</option>
+              <option value="">Choose your branch</option>
               {BRANCHES.map(branch => (
                 <option key={branch} value={branch}>{branch}</option>
               ))}
@@ -226,7 +224,7 @@ export default function BranchManagerSignupPage() {
               cursor: loading ? 'not-allowed' : 'pointer'
             }}
           >
-            {loading ? <span className="spinner" style={{ width: '20px', height: '20px' }} /> : 'Sign Up as Manager ➜'}
+            {loading ? <span className="spinner" style={{ width: '20px', height: '20px' }} /> : 'Sign Up as Staff ➜'}
           </button>
         </form>
 

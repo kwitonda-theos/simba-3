@@ -19,6 +19,7 @@ import ResetPasswordPage from './pages/ResetPasswordPage';
 import SignupChoicePage from './pages/SignupChoicePage';
 import CustomerSignupPage from './pages/CustomerSignupPage';
 import BranchManagerSignupPage from './pages/BranchManagerSignupPage';
+import BranchStaffSignupPage from './pages/BranchStaffSignupPage';
 import BranchDashboard from './pages/BranchDashboard';
 import MyOrdersPage from './pages/MyOrdersPage';
 
@@ -56,31 +57,67 @@ function BackToTop() {
 function AppContent() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { isBranchManager, user } = useAuth();
+  const [error, setError] = useState(null);
+  const { user, loading: authLoading } = useAuth();
+  
+  const isStaff = useMemo(() => {
+    const role = user?.role || user?.user_metadata?.role;
+    console.log('Current User Role:', role);
+    return role === 'branch_manager' || role === 'branch-manager' || role === 'branch_staff' || role === 'branch-staff';
+  }, [user]);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const { data, error } = await supabase
+        setLoading(true);
+        console.log('Fetching products from Supabase and JSON...');
+        
+        // 1. Fetch from Supabase
+        const { data: sbData, error: sbError } = await supabase
           .from('products')
-          .select('*')
-          .eq('is_active', true);
+          .select('*');
 
-        if (error) throw error;
+        if (sbError) throw sbError;
 
-        // Map Supabase field names back to existing frontend names
-        const mappedProducts = (data || []).map(p => ({
-          ...p,
-          image: p.image_url 
-        }));
+        // 2. Fetch from JSON to get inStock info
+        const response = await fetch('/simba_products (1).json');
+        const localData = await response.json();
+        const jsonProducts = localData.products || [];
+        
+        // Create a map for quick lookup
+        const inStockMap = jsonProducts.reduce((acc, p) => {
+          acc[p.id] = p.inStock;
+          return acc;
+        }, {});
 
-        setProducts(mappedProducts);
+        if (!sbData || sbData.length === 0) {
+          console.warn('No products found in Supabase, using local JSON data.');
+          setProducts(jsonProducts.map(p => ({
+            ...p,
+            image: p.image || 'https://placehold.co/300x300?text=' + encodeURIComponent(p.name)
+          })));
+        } else {
+          // Merge Supabase data with inStock info from JSON
+          const mappedProducts = sbData.map(p => ({
+            ...p,
+            image: p.image_url || 'https://placehold.co/300x300?text=' + encodeURIComponent(p.name),
+            inStock: inStockMap[p.id] !== undefined ? inStockMap[p.id] : true // Default to true if not in JSON
+          }));
+          setProducts(mappedProducts);
+          console.log(`Loaded ${mappedProducts.length} products with stock status.`);
+        }
       } catch (err) {
-        console.error('Failed to load products from Supabase:', err.message);
-        // Fallback to local JSON
-        fetch('/simba_products (1).json')
-          .then(res => res.json())
-          .then(data => setProducts(data.products || []));
+        console.error('Data loading error:', err.message);
+        try {
+          const response = await fetch('/simba_products (1).json');
+          const localData = await response.json();
+          setProducts((localData.products || []).map(p => ({
+            ...p,
+            image: p.image || 'https://placehold.co/300x300?text=' + encodeURIComponent(p.name)
+          })));
+        } catch (fallbackErr) {
+          setError('Failed to load products. Please check your connection.');
+        }
       } finally {
         setLoading(false);
       }
@@ -90,16 +127,28 @@ function AppContent() {
   }, []);
 
   const categories = useMemo(() => {
-    const cats = [...new Set(products.map(p => p.category))];
+    if (!products.length) return [];
+    const cats = [...new Set(products.map(p => p.category))].filter(Boolean);
     return cats.sort();
   }, [products]);
 
-  if (loading) {
+  if (error) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', flexDirection: 'column', gap: '20px' }}>
+        <h2 style={{ color: 'var(--accent-red)' }}>⚠️ {error}</h2>
+        <button onClick={() => window.location.reload()} className="hero-cta">Retry Loading</button>
+      </div>
+    );
+  }
+
+  if (loading || authLoading) {
     return (
       <div className="loading-spinner" style={{ minHeight: '100vh' }}>
         <div style={{ textAlign: 'center' }}>
           <div className="spinner" style={{ margin: '0 auto 16px' }} />
-          <p style={{ color: 'var(--text-tertiary)', fontWeight: 500 }}>Loading Simba Supermarket...</p>
+          <p style={{ color: 'var(--text-tertiary)', fontWeight: 500 }}>
+            {authLoading ? 'Authenticating...' : 'Loading Products...'}
+          </p>
         </div>
       </div>
     );
@@ -113,7 +162,7 @@ function AppContent() {
       <ToastContainer />
 
       <main>
-        {isBranchManager ? (
+        {isStaff ? (
           <BranchDashboard products={products} categories={categories} />
         ) : (
           <Routes>
@@ -156,6 +205,10 @@ function AppContent() {
             <Route
               path="/signup/branch-manager"
               element={<BranchManagerSignupPage />}
+            />
+            <Route
+              path="/signup/branch-staff"
+              element={<BranchStaffSignupPage />}
             />
             <Route
               path="/my-orders"

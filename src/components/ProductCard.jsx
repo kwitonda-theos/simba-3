@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useLanguage } from '../context/LanguageContext';
 import { formatPrice, generateImageUrl } from '../utils/helpers';
+import Icon from './Icon';
 
 export default function ProductCard({ product }) {
   const { addToCart, isInCart, getItemQuantity, updateQuantity } = useCart();
@@ -46,7 +47,10 @@ export default function ProductCard({ product }) {
           onError={() => setImageError(true)}
         />
         {product.inStock && (
-          <span className="product-card-badge">{t('inStock')}</span>
+          <span className="product-card-badge">
+            <Icon name="check" size={12} style={{ marginRight: '4px' }} />
+            {t('inStock')}
+          </span>
         )}
       </div>
       <div className="product-card-body">
@@ -59,17 +63,17 @@ export default function ProductCard({ product }) {
             <span className="product-card-price-currency"> RWF</span>
           </div>
           {inCart ? (
-            <div className="quantity-controls">
-              <button className="qty-btn" onClick={handleDecrement}>−</button>
+            <div className="quantity-controls quantity-controls--card quantity-controls--compact">
+              <button type="button" className="qty-btn" onClick={handleDecrement} aria-label="Decrease quantity"><Icon name="minus" size={14} /></button>
               <span className="qty-value">{quantity}</span>
-              <button className="qty-btn" onClick={handleIncrement}>+</button>
+              <button type="button" className="qty-btn" onClick={handleIncrement} aria-label="Increase quantity"><Icon name="plus" size={14} /></button>
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
-              <div className="quantity-controls" style={{ width: '100%', justifyContent: 'space-between' }}>
-                <button className="qty-btn" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedQty(Math.max(1, selectedQty - 1)); }}>−</button>
+            <div className="product-card-actions">
+              <div className="quantity-controls quantity-controls--card quantity-controls--select">
+                <button type="button" className="qty-btn" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedQty(Math.max(1, selectedQty - 1)); }} aria-label="Decrease selected quantity"><Icon name="minus" size={14} /></button>
                 <span className="qty-value">{selectedQty}</span>
-                <button className="qty-btn" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedQty(selectedQty + 1); }}>+</button>
+                <button type="button" className="qty-btn" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedQty(selectedQty + 1); }} aria-label="Increase selected quantity"><Icon name="plus" size={14} /></button>
               </div>
               <button
                 className={`add-to-cart-btn ${justAdded ? 'added' : ''}`}
@@ -77,7 +81,8 @@ export default function ProductCard({ product }) {
                 id={`add-cart-${product.id}`}
                 style={{ width: '100%' }}
               >
-                {justAdded ? '✓' : '+'} <span>{justAdded ? t('added') : t('addToCart')}</span>
+                {justAdded ? <Icon name="check" size={16} /> : <Icon name="plus" size={16} />} 
+                <span style={{ marginLeft: '6px' }}>{justAdded ? t('added') : t('addToCart')}</span>
               </button>
             </div>
           )}

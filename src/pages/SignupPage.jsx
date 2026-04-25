@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
+import { supabase } from '../lib/supabase';
 
 const BRANCHES = [
   "Main Branch",
@@ -38,12 +39,32 @@ export default function SignupPage() {
     setLoading(true);
 
     try {
+      let branches = [];
+      if (formData.role === 'branch_manager' && formData.branch) {
+        // Look up the branch UUID to avoid database type errors in triggers
+        const { data: branchData } = await supabase
+          .from('branches')
+          .select('id')
+          .eq('name', formData.branch)
+          .maybeSingle();
+        
+        if (branchData?.id) {
+          branches = [branchData.id];
+        } else {
+          // If UUID not found, don't send the name as a branch ID to avoid DB error
+          console.warn('Branch UUID not found for:', formData.branch);
+        }
+      }
+
       const { error: signupError } = await signup({
         email: formData.email,
         password: formData.password,
         name: formData.name,
         role: formData.role,
-        branches: formData.role === 'branch_manager' ? [formData.branch] : [],
+        branches: branches,
+        metadata: {
+          branch_name: formData.role === 'branch_manager' ? formData.branch : null
+        }
       });
 
       if (signupError) {

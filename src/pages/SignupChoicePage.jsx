@@ -71,6 +71,32 @@ export default function SignupChoicePage() {
             {t('createManagerAccount')} ➜
           </div>
         </Link>
+
+        {/* Branch Staff Choice */}
+        <Link to="/signup/branch-staff" style={{ 
+          background: 'var(--bg-card)', 
+          padding: '48px 32px', 
+          borderRadius: '24px', 
+          boxShadow: 'var(--shadow-lg)',
+          border: '1px solid var(--border-color)',
+          textAlign: 'center',
+          transition: 'transform 0.2s, box-shadow 0.2s',
+          cursor: 'pointer'
+        }}
+        onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-8px)'; e.currentTarget.style.boxShadow = 'var(--shadow-xl)'; }}
+        onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'var(--shadow-lg)'; }}
+        >
+          <div style={{ fontSize: '48px', marginBottom: '24px' }}>🧑‍🍳</div>
+          <h2 style={{ fontSize: '24px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '12px' }}>
+            Branch Staff
+          </h2>
+          <p style={{ color: 'var(--text-tertiary)', fontSize: '15px', lineHeight: '1.6' }}>
+            Join a branch team to help prepare and fulfill customer orders
+          </p>
+          <div style={{ marginTop: '32px', color: 'var(--primary)', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+            Create Staff Account ➜
+          </div>
+        </Link>
       </div>
     </div>
   );
