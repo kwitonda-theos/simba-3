@@ -59,7 +59,7 @@ function AppContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { user, loading: authLoading } = useAuth();
-  
+
   const isStaff = useMemo(() => {
     const role = user?.role || user?.user_metadata?.role;
     console.log('Current User Role:', role);
@@ -71,7 +71,7 @@ function AppContent() {
       try {
         setLoading(true);
         console.log('Fetching products from Supabase and JSON...');
-        
+
         // 1. Fetch from Supabase
         const { data: sbData, error: sbError } = await supabase
           .from('products')
@@ -83,7 +83,7 @@ function AppContent() {
         const response = await fetch('/simba_products.json');
         const localData = await response.json();
         const jsonProducts = localData.products || [];
-        
+
         // Create a map for quick lookup
         const inStockMap = jsonProducts.reduce((acc, p) => {
           acc[p.id] = p.inStock;
