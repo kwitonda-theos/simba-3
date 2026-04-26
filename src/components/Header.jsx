@@ -74,13 +74,26 @@ export default function Header({ onSearch }) {
 
           <form className="search-container" onSubmit={handleSearch} id="search-form">
             <div className="search-wrapper">
+              <div className="ai-badge" style={{ 
+                position: 'absolute', 
+                left: '12px', 
+                top: '50%', 
+                transform: 'translateY(-50%)', 
+                color: 'var(--primary)',
+                display: 'flex',
+                alignItems: 'center',
+                pointerEvents: 'none'
+              }}>
+                <Icon name="sparkles" size={18} />
+              </div>
               <input
                 type="text"
                 className="search-input"
-                placeholder={t('search')}
+                placeholder="Ask AI for products... (e.g., 'What's good for breakfast?')"
                 value={searchQuery}
                 onChange={handleInputChange}
                 id="search-input"
+                style={{ paddingLeft: '40px' }}
               />
               <button type="submit" className="search-btn" id="search-btn">
                 <Icon name="search" size={18} style={{ marginRight: '6px' }} /> <span className="search-btn-text">{t('searchBtn')}</span>
