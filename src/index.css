@@ -824,39 +824,51 @@ ul, ol {
 }
 
 .quantity-controls--card {
-  padding: 4px;
-  border-radius: 12px;
-  background: var(--bg-secondary);
+  padding: 3px;
+  border-radius: var(--radius-full);
+  background: var(--bg-tertiary);
   border: 1px solid var(--border-color);
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
+  width: 100%;
+  justify-content: space-between;
 }
 
 .qty-btn {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
   background: var(--bg-card);
   color: var(--text-primary);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
+  font-size: 16px;
   border: 1px solid var(--border-color);
   transition: all var(--transition-fast);
+  box-shadow: var(--shadow-sm);
 }
 
 .qty-btn:hover {
   background: var(--primary);
   color: white;
   border-color: var(--primary);
+  transform: scale(1.05);
+}
+
+.qty-btn:active {
+  transform: scale(0.95);
 }
 
 .qty-value {
-  font-weight: 700;
-  font-size: 13px;
+  font-weight: 800;
+  font-size: 14px;
   color: var(--text-primary);
+  min-width: 24px;
+  text-align: center;
+  user-select: none;
 }
 
 /* ===== FILTER PANEL ===== */

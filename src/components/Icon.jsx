@@ -173,6 +173,20 @@ const icons = {
       <polyline points="12 6 12 12 16 14" />
     </svg>
   ),
+  menu: (props) => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <line x1="3" y1="12" x2="21" y2="12" />
+      <line x1="3" y1="6" x2="21" y2="6" />
+      <line x1="3" y1="18" x2="21" y2="18" />
+    </svg>
+  ),
+  sparkles: (props) => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="M12 3l1.912 3.874 4.276.622-3.094 3.016.73 4.258L12 12.75 8.176 14.77l.73-4.258-3.094-3.016 4.276-.622L12 3z" />
+      <path d="M5 3l.912 1.874 2.276.322-1.594 1.516.33 2.258L5 8l-2.076 1.07.33-2.258-1.594-1.516 2.276-.322L5 3z" />
+      <path d="M19 15l.912 1.874 2.276.322-1.594 1.516.33 2.258L19 20l-2.076 1.07.33-2.258-1.594-1.516 2.276-.322L19 15z" />
+    </svg>
+  ),
 };
 
 export default function Icon({ name, size = 24, className = '', style = {} }) {
