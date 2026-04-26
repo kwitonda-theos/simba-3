@@ -1990,6 +1990,223 @@ ul, ol {
   to { transform: rotate(360deg); }
 }
 
+/* ===== MOBILE MENU & RESPONSIVE UTILS ===== */
+.desktop-only {
+  display: flex !important;
+}
+
+.mobile-menu-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  cursor: pointer;
+  background: var(--bg-tertiary);
+  margin-right: var(--space-sm);
+}
+
+.mobile-menu-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-overlay);
+  backdrop-filter: blur(4px);
+  z-index: 2000;
+  display: flex;
+  justify-content: flex-start;
+  animation: fade-in 0.3s ease-out;
+}
+
+.mobile-menu-content {
+  width: 300px;
+  max-width: 85vw;
+  height: 100%;
+  background: var(--bg-primary);
+  box-shadow: var(--shadow-xl);
+  display: flex;
+  flex-direction: column;
+  animation: slide-in-left 0.3s var(--transition-spring);
+}
+
+.mobile-menu-header {
+  padding: var(--space-lg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.mobile-nav {
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.mobile-nav-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: 14px 18px;
+  border-radius: var(--radius-lg);
+  color: var(--text-primary);
+  font-weight: 600;
+  transition: all var(--transition-fast);
+  background: var(--bg-secondary);
+}
+
+.mobile-nav-link:hover {
+  background: var(--primary-glow);
+  color: var(--primary);
+  transform: translateX(4px);
+}
+
+.mobile-user-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding-bottom: var(--space-lg);
+  margin-bottom: var(--space-lg);
+  border-bottom: 1px solid var(--divider);
+}
+
+.user-avatar {
+  width: 48px;
+  height: 48px;
+  background: var(--primary);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 20px;
+}
+
+.user-name {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--text-primary);
+}
+
+.user-email {
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-in-left {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+@media (max-width: 1024px) {
+  .desktop-only {
+    display: none !important;
+  }
+  
+  .mobile-menu-toggle {
+    display: flex;
+  }
+
+  .header-main {
+    padding: var(--space-sm) 0;
+    gap: var(--space-sm);
+  }
+
+  .logo {
+    margin-right: auto;
+  }
+
+  .search-container {
+    max-width: 100%;
+    margin-top: var(--space-sm);
+  }
+  
+  .search-btn-text {
+    display: none;
+  }
+  
+  .search-btn {
+    padding: 10px 14px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-main {
+    flex-wrap: wrap;
+  }
+  
+  .search-container {
+    order: 3;
+    width: 100%;
+    margin-top: 8px;
+  }
+  
+  .logo {
+    font-size: 20px;
+  }
+}
+
+/* ===== CHECKOUT PAGE ===== */
+.checkout-grid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: var(--space-xl);
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .checkout-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+  }
+  
+  .checkout-sidebar {
+    order: -1; /* Show summary at top on mobile if desired, or leave at bottom */
+  }
+  
+  .checkout-page {
+    padding-top: 80px !important;
+  }
+  
+  .checkout-form-section {
+    padding: 24px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .checkout-input {
+    padding: 12px 14px !important;
+    font-size: 14px !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  .header-actions span {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: var(--space-md);
+  }
+  
+  .sort-select {
+    width: 100%;
+    margin-left: 0 !important;
+  }
+}
+
 /* ===== TOAST NOTIFICATION ===== */
 .toast-container {
   position: fixed;

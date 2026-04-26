@@ -325,7 +325,8 @@ export default function BranchDashboard({ products: initialProducts, categories 
   }
 
   return (
-    <div style={{ 
+  return (
+    <div className="dashboard-container" style={{ 
       display: 'flex', 
       minHeight: '100vh', 
       background: 'var(--bg-secondary)',
@@ -333,8 +334,123 @@ export default function BranchDashboard({ products: initialProducts, categories 
       position: 'relative',
       zIndex: 100
     }}>
+      <style>{`
+        @media (max-width: 1024px) {
+          .dashboard-container {
+            flex-direction: column !important;
+            margin-top: 0 !important;
+          }
+          .dashboard-sidebar {
+            width: 100% !important;
+            height: auto !important;
+            position: static !important;
+            padding: 16px !important;
+            border-right: none !important;
+            border-bottom: 1px solid var(--border-color) !important;
+          }
+          .dashboard-sidebar > div:first-child {
+            padding: 0 0 16px !important;
+            margin-bottom: 16px !important;
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            border-bottom: 1px solid var(--border-light) !important;
+          }
+          .dashboard-sidebar > div:first-child > div:nth-child(2),
+          .dashboard-sidebar > div:first-child > div:nth-child(3) {
+            display: none !important;
+          }
+          .dashboard-nav {
+            display: flex !important;
+            padding: 0 !important;
+            overflow-X: auto !important;
+            gap: 8px !important;
+            scrollbar-width: none !important;
+          }
+          .dashboard-nav::-webkit-scrollbar {
+            display: none !important;
+          }
+          .dashboard-nav button {
+            width: auto !important;
+            white-space: nowrap !important;
+            margin-bottom: 0 !important;
+            padding: 10px 16px !important;
+          }
+          .dashboard-main {
+            padding: 20px 16px !important;
+          }
+          .dashboard-header {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 16px !important;
+            margin-bottom: 24px !important;
+          }
+          .dashboard-header > div:last-child {
+            text-align: left !important;
+          }
+          .stats-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
+          .mobile-logout {
+             display: flex !important;
+             align-items: center !important;
+             justify-content: center !important;
+             width: 40px !important;
+             height: 40px !important;
+             border-radius: 10px !important;
+             background: rgba(239, 68, 68, 0.1) !important;
+             color: var(--accent-red) !important;
+          }
+          .desktop-logout {
+            display: none !important;
+          }
+          /* Responsive Table Cards */
+          .dashboard-table thead {
+            display: none;
+          }
+          .dashboard-table tr {
+            display: block;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            margin-bottom: 16px;
+            padding: 12px !important;
+          }
+          .dashboard-table td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0 !important;
+            border: none !important;
+            text-align: right;
+            font-size: 14px;
+          }
+          .dashboard-table td::before {
+            content: attr(data-label);
+            font-weight: 700;
+            color: var(--text-tertiary);
+            font-size: 11px;
+            text-transform: uppercase;
+            text-align: left;
+            margin-right: 16px;
+          }
+          .order-row td:first-child {
+            border-bottom: 1px solid var(--border-light) !important;
+            margin-bottom: 8px;
+            padding-bottom: 12px !important;
+          }
+          .dashboard-main {
+            padding-bottom: 100px !important;
+          }
+        }
+        @media (min-width: 1025px) {
+          .mobile-logout {
+            display: none !important;
+          }
+        }
+      `}</style>
       {/* Sidebar Navigation */}
-      <aside style={{ 
+      <aside className="dashboard-sidebar" style={{ 
         width: '280px', 
         background: 'var(--bg-card)', 
         borderRight: '1px solid var(--border-color)',
@@ -351,6 +467,7 @@ export default function BranchDashboard({ products: initialProducts, categories 
               <Icon name="shield" size={20} />
             </div>
             <span style={{ fontWeight: 800, fontSize: '20px', letterSpacing: '-0.5px' }}>Simba Admin</span>
+            <button className="mobile-logout" onClick={logout}><Icon name="logout" size={20} /></button>
           </div>
           <div style={{ 
             background: '#000', 
@@ -383,7 +500,7 @@ export default function BranchDashboard({ products: initialProducts, categories 
           </div>
         </div>
 
-        <nav style={{ flex: 1, padding: '0 16px' }}>
+        <nav className="dashboard-nav" style={{ flex: 1, padding: '0 16px' }}>
           {navItems.map(item => (
             <button
               key={item.id}
@@ -412,7 +529,7 @@ export default function BranchDashboard({ products: initialProducts, categories 
           ))}
         </nav>
 
-        <div style={{ padding: '0 16px', marginTop: 'auto' }}>
+        <div className="desktop-logout" style={{ padding: '0 16px', marginTop: 'auto' }}>
           <button 
             onClick={logout}
             style={{
@@ -433,13 +550,13 @@ export default function BranchDashboard({ products: initialProducts, categories 
       </aside>
 
       {/* Main Content Area */}
-      <main style={{ flex: 1, padding: '40px clamp(20px, 5vw, 60px)', overflowY: 'auto' }}>
-        <header style={{ marginBottom: '40px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+      <main className="dashboard-main" style={{ flex: 1, padding: '40px clamp(20px, 5vw, 60px)', overflowY: 'auto' }}>
+        <header className="dashboard-header" style={{ marginBottom: '40px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
           <div>
             <h1 style={{ fontSize: '32px', fontWeight: 800, marginBottom: '8px', color: 'var(--text-primary)' }}>
               {navItems.find(i => i.id === activeTab)?.label}
             </h1>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
               <p style={{ color: 'var(--text-tertiary)', fontSize: '16px', margin: 0 }}>
                 {t('welcomeBackManager')}, <strong>{user?.name}</strong>
               </p>
@@ -492,7 +609,7 @@ export default function BranchDashboard({ products: initialProducts, categories 
             )}
 
             {/* Order Summary Stats */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '16px', marginBottom: '28px' }}>
+            <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '16px', marginBottom: '28px' }}>
               {[
                 { label: t('orders'), value: orders.length, color: '#6366f1', bg: 'rgba(99, 102, 241, 0.1)', icon: 'file' },
                 { label: t('pending'), value: orders.filter(o => o.status === 'pending').length, color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.1)', icon: 'clock' },
@@ -593,13 +710,13 @@ export default function BranchDashboard({ products: initialProducts, categories 
 
                         return (
                           <tr key={order.id} className="order-row" style={{ borderBottom: '1px solid var(--border-light)', transition: 'background 0.15s' }}>
-                            <td style={{ padding: '18px 24px' }}>
+                            <td data-label={t('id')} style={{ padding: '18px 24px' }}>
                               <span style={{ fontWeight: 800, color: 'var(--primary)', fontSize: '14px' }}>#{order.order_number}</span>
                               <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginTop: '2px' }}>
                                 {new Date(order.created_at).toLocaleDateString()}
                               </div>
                             </td>
-                            <td style={{ padding: '18px 24px' }}>
+                            <td data-label={t('pickupTime')} style={{ padding: '18px 24px' }}>
                               <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '14px' }}>
                                 {order.pickup_time ? new Date(order.pickup_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'ASAP'}
                               </div>
@@ -607,15 +724,15 @@ export default function BranchDashboard({ products: initialProducts, categories 
                                 {order.pickup_time ? new Date(order.pickup_time).toLocaleDateString() : '—'}
                               </div>
                             </td>
-                            <td style={{ padding: '18px 24px' }}>
+                            <td data-label={t('customer')} style={{ padding: '18px 24px' }}>
                               <div style={{ fontWeight: 600, fontSize: '14px' }}>{order.customerProfile?.full_name || 'Customer'}</div>
                               <div style={{ fontSize: '12px', color: 'var(--text-tertiary)', marginTop: '1px' }}>{order.contact_phone}</div>
                             </td>
-                            <td style={{ padding: '18px 24px' }}>
+                            <td data-label={t('amount')} style={{ padding: '18px 24px' }}>
                               <div style={{ fontWeight: 700, fontSize: '14px' }}>{formatPrice(order.total_amount || 0)} <span style={{ fontSize: '11px', fontWeight: 500, color: 'var(--text-tertiary)' }}>RWF</span></div>
                             </td>
                             {isBranchManager && (
-                              <td style={{ padding: '18px 24px' }}>
+                              <td data-label="Assigned To" style={{ padding: '18px 24px' }}>
                                 <select 
                                   value={order.assigned_to || ''} 
                                   onChange={(e) => assignOrder(order.id, e.target.value)}
@@ -628,7 +745,7 @@ export default function BranchDashboard({ products: initialProducts, categories 
                                 </select>
                               </td>
                             )}
-                            <td style={{ padding: '18px 24px' }}>
+                            <td data-label={t('status')} style={{ padding: '18px 24px' }}>
                               <span style={{ 
                                 padding: '6px 14px', 
                                 borderRadius: '99px', 
@@ -645,7 +762,7 @@ export default function BranchDashboard({ products: initialProducts, categories 
                                 {getStatusLabel(order.status)}
                               </span>
                             </td>
-                            <td style={{ padding: '18px 24px' }}>
+                            <td data-label={t('actions')} style={{ padding: '18px 24px' }}>
                               <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
                                 {isBranchStaff ? (
                                   <>
@@ -749,15 +866,15 @@ export default function BranchDashboard({ products: initialProducts, categories 
                     .filter(p => !filterCategory || p.category === filterCategory)
                     .map(product => (
                       <tr key={product.id} style={{ borderBottom: '1px solid var(--border-light)' }}>
-                        <td style={{ padding: '20px 24px' }}>
+                        <td data-label={t('product')} style={{ padding: '20px 24px' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                             <img src={product.image_url} alt="" style={{ width: '48px', height: '48px', borderRadius: '12px', objectFit: 'cover', background: 'var(--bg-tertiary)' }} />
                             <div style={{ fontWeight: 600 }}>{product.name}</div>
                           </div>
                         </td>
-                        <td style={{ padding: '20px 24px', color: 'var(--text-secondary)' }}>{t(product.category)}</td>
-                        <td style={{ padding: '20px 24px', fontWeight: 600 }}>{formatPrice(product.price)}</td>
-                        <td style={{ padding: '20px 24px' }}>
+                        <td data-label={t('category')} style={{ padding: '20px 24px', color: 'var(--text-secondary)' }}>{t(product.category)}</td>
+                        <td data-label={t('price')} style={{ padding: '20px 24px', fontWeight: 600 }}>{formatPrice(product.price)}</td>
+                        <td data-label={t('stock')} style={{ padding: '20px 24px' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                             <button 
                               onClick={() => updateStock(product.inventory_id, product.id, product.stock - 1)}
@@ -787,16 +904,16 @@ export default function BranchDashboard({ products: initialProducts, categories 
                             <div style={{ fontSize: '10px', color: 'var(--accent-red)', fontWeight: 700, marginTop: '4px', textTransform: 'uppercase' }}>{t('outOfStock')}</div>
                           )}
                         </td>
-                        <td style={{ padding: '20px 24px' }}>
+                        <td data-label={t('action')} style={{ padding: '20px 24px' }}>
                           {product.stock > 0 ? (
                             <button 
                               onClick={() => updateStock(product.inventory_id, product.id, 0)}
                               style={{ color: 'var(--accent-red)', fontWeight: 700, fontSize: '12px', padding: '6px 10px', borderRadius: '6px', background: 'rgba(239, 68, 68, 0.05)', border: '1px solid rgba(239, 68, 68, 0.1)', cursor: 'pointer' }}
                             >
-                              Mark out of stock
+                              {t('markOutOfStock')}
                             </button>
                           ) : (
-                            <span style={{ color: 'var(--text-tertiary)', fontSize: '12px', fontWeight: 600 }}>No Action</span>
+                            <span style={{ color: 'var(--text-tertiary)', fontSize: '12px', fontWeight: 600 }}>{t('noAction')}</span>
                           )}
                         </td>
                       </tr>

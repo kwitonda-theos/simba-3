@@ -175,20 +175,20 @@ export default function MyOrdersPage() {
                 borderBottom: '1px solid var(--border-color)',
                 display: 'flex',
                 justifyContent: 'space-between',
-                alignItems: 'center',
-                flexWrap: 'wrap',
+                alignItems: 'flex-start',
+                flexDirection: 'column',
                 gap: '16px'
               }}>
-                <div style={{ display: 'flex', gap: '32px', flexWrap: 'wrap' }}>
-                  <div>
+                <div style={{ display: 'flex', gap: 'clamp(16px, 5vw, 32px)', flexWrap: 'wrap', width: '100%' }}>
+                  <div style={{ minWidth: '120px' }}>
                     <div style={{ fontSize: '12px', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>{t('orderPlacedOn')}</div>
                     <div style={{ fontWeight: 600 }}>{new Date(order.date).toLocaleDateString()}</div>
                   </div>
-                  <div>
+                  <div style={{ minWidth: '120px' }}>
                     <div style={{ fontSize: '12px', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>{t('total')}</div>
                     <div style={{ fontWeight: 600 }}>{formatPrice(order.total)} RWF</div>
                   </div>
-                  <div>
+                  <div style={{ minWidth: '200px' }}>
                     <div style={{ fontSize: '12px', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>{t('pickupDetails')}</div>
                     <div style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <Icon name="mapPin" size={14} color="var(--primary)" /> {order.pickupBranch}
@@ -198,16 +198,15 @@ export default function MyOrdersPage() {
                     </div>
                   </div>
                 </div>
-                <div>
-                  <div style={{ fontSize: '12px', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px', textAlign: 'right' }}>{t('orderNumber')} # {order.orderNumber}</div>
+                <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border-light)', paddingTop: '16px' }}>
+                  <div style={{ fontSize: '12px', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>#{order.orderNumber}</div>
                   <div style={{ 
                     fontWeight: 700, 
                     color: order.status === 'cancelled' ? 'var(--accent-red)' : 'var(--primary)', 
-                    textAlign: 'right',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'flex-end',
-                    gap: '6px'
+                    gap: '6px',
+                    fontSize: '14px'
                   }}>
                     {order.displayStatus}
                   </div>
