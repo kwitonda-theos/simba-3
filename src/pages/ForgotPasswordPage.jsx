@@ -22,10 +22,10 @@ export default function ForgotPasswordPage() {
       if (resetError) {
         setError(resetError);
       } else {
-        setMessage('Check your email for a password reset link!');
+        setMessage(t('checkEmailReset'));
       }
     } catch (err) {
-      setError('An unexpected error occurred. Please try again.');
+      setError(t('unexpectedError'));
     } finally {
       setLoading(false);
     }
@@ -67,7 +67,7 @@ export default function ForgotPasswordPage() {
             {t('forgotPassword')}
           </h1>
           <p style={{ color: 'var(--text-tertiary)', fontSize: '15px' }}>
-            Enter your email to receive a password reset link
+            {t('forgotPasswordSubtitle')}
           </p>
         </div>
 
@@ -114,7 +114,7 @@ export default function ForgotPasswordPage() {
               placeholder="name@example.com"
               required
               disabled={loading}
-              style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none' }}
+              style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none', background: 'var(--bg-card)', color: 'var(--text-primary)' }}
             />
           </div>
           
@@ -137,14 +137,15 @@ export default function ForgotPasswordPage() {
               cursor: loading ? 'not-allowed' : 'pointer'
             }}
           >
-            {loading ? <span className="spinner" style={{ width: '20px', height: '20px' }} /> : 'Send Reset Link'}
+            {loading ? <span className="spinner" style={{ width: '20px', height: '20px' }} /> : t('sendResetLink')}
           </button>
         </form>
 
         <p style={{ textAlign: 'center', marginTop: '32px', color: 'var(--text-secondary)', fontSize: '15px' }}>
-          Back to <Link to="/login" style={{ color: 'var(--primary)', fontWeight: 700 }}>{t('login')}</Link>
+          {t('backTo')} <Link to="/login" style={{ color: 'var(--primary)', fontWeight: 700 }}>{t('login')}</Link>
         </p>
       </div>
     </div>
   );
 }
+

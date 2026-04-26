@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function ResetPasswordPage() {
   const { updatePassword } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -15,7 +17,7 @@ export default function ResetPasswordPage() {
     setError('');
 
     if (password !== confirmPassword) {
-      return setError('Passwords do not match');
+      return setError(t('passwordsDoNotMatch'));
     }
 
     setLoading(true);
@@ -25,11 +27,11 @@ export default function ResetPasswordPage() {
       if (updateError) {
         setError(updateError);
       } else {
-        alert('Password updated successfully! Please login with your new password.');
+        alert(t('passwordUpdatedSuccess'));
         navigate('/login');
       }
     } catch (err) {
-      setError('An unexpected error occurred. Please try again.');
+      setError(t('unexpectedError'));
     } finally {
       setLoading(false);
     }
@@ -68,10 +70,10 @@ export default function ResetPasswordPage() {
             🔐
           </div>
           <h1 style={{ fontSize: '28px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '8px' }}>
-            Set New Password
+            {t('setNewPassword')}
           </h1>
           <p style={{ color: 'var(--text-tertiary)', fontSize: '15px' }}>
-            Please enter your new password below
+            {t('enterNewPasswordSubtitle')}
           </p>
         </div>
 
@@ -93,7 +95,7 @@ export default function ResetPasswordPage() {
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div className="form-group">
             <label className="form-label" style={{ marginBottom: '8px', display: 'block', fontWeight: 600 }}>
-              New Password
+              {t('newPassword')}
             </label>
             <input
               type="password"
@@ -104,13 +106,13 @@ export default function ResetPasswordPage() {
               required
               minLength={8}
               disabled={loading}
-              style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none' }}
+              style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none', background: 'var(--bg-card)', color: 'var(--text-primary)' }}
             />
           </div>
 
           <div className="form-group">
             <label className="form-label" style={{ marginBottom: '8px', display: 'block', fontWeight: 600 }}>
-              Confirm New Password
+              {t('confirmNewPassword')}
             </label>
             <input
               type="password"
@@ -120,7 +122,7 @@ export default function ResetPasswordPage() {
               placeholder="••••••••"
               required
               disabled={loading}
-              style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none' }}
+              style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none', background: 'var(--bg-card)', color: 'var(--text-primary)' }}
             />
           </div>
           
@@ -143,7 +145,7 @@ export default function ResetPasswordPage() {
               cursor: loading ? 'not-allowed' : 'pointer'
             }}
           >
-            {loading ? <span className="spinner" style={{ width: '20px', height: '20px' }} /> : 'Update Password'}
+            {loading ? <span className="spinner" style={{ width: '20px', height: '20px' }} /> : t('updatePassword')}
           </button>
         </form>
       </div>

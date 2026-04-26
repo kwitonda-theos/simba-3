@@ -28,9 +28,9 @@ export default function LoginPage() {
       if (loginError) {
         // Provide clear error messages based on Supabase error codes
         if (loginError.includes('Invalid login credentials')) {
-          setError('Invalid email or password. Please try again.');
+          setError(t('invalidCredentials'));
         } else if (loginError.includes('Email not confirmed')) {
-          setError('Please confirm your email address before logging in.');
+          setError(t('emailNotConfirmed'));
         } else {
           setError(loginError);
         }
@@ -38,7 +38,7 @@ export default function LoginPage() {
         navigate(from, { replace: true });
       }
     } catch (err) {
-      setError('An unexpected error occurred. Please try again later.');
+      setError(t('unexpectedError'));
     } finally {
       setLoading(false);
     }
@@ -125,7 +125,7 @@ export default function LoginPage() {
               placeholder="name@example.com"
               required
               disabled={loading}
-              style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none', transition: 'border-color 0.2s' }}
+              style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none', transition: 'border-color 0.2s', background: 'var(--bg-card)', color: 'var(--text-primary)' }}
             />
           </div>
           <div className="form-group">
@@ -146,7 +146,7 @@ export default function LoginPage() {
               placeholder="••••••••"
               required
               disabled={loading}
-              style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none' }}
+              style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none', background: 'var(--bg-card)', color: 'var(--text-primary)' }}
             />
           </div>
           
@@ -203,7 +203,7 @@ export default function LoginPage() {
             onMouseOut={(e) => e.currentTarget.style.background = 'var(--bg-card)'}
           >
             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style={{ width: '18px' }} />
-            Continue with Google
+            {t('continueWithGoogle')}
           </button>
         </div>
 

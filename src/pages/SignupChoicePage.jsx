@@ -88,13 +88,13 @@ export default function SignupChoicePage() {
         >
           <div style={{ fontSize: '48px', marginBottom: '24px' }}>🧑‍🍳</div>
           <h2 style={{ fontSize: '24px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '12px' }}>
-            Branch Staff
+            {t('branchStaff')}
           </h2>
           <p style={{ color: 'var(--text-tertiary)', fontSize: '15px', lineHeight: '1.6' }}>
-            Join a branch team to help prepare and fulfill customer orders
+            {t('branchStaffDescription')}
           </p>
           <div style={{ marginTop: '32px', color: 'var(--primary)', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-            Create Staff Account ➜
+            {t('createStaffAccount')} ➜
           </div>
         </Link>
       </div>

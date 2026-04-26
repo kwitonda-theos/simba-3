@@ -66,11 +66,11 @@ export default function BranchManagerSignupPage() {
       if (signupError) {
         setError(signupError);
       } else {
-        alert('Check your email for a confirmation link!');
+        alert(t('checkEmailConfirmation'));
         navigate('/login');
       }
     } catch (err) {
-      setError('An unexpected error occurred. Please try again.');
+      setError(t('unexpectedError'));
     } finally {
       setLoading(false);
     }
@@ -113,10 +113,10 @@ export default function BranchManagerSignupPage() {
             🏢
           </div>
           <h1 style={{ fontSize: '28px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '8px' }}>
-            Branch Manager Sign Up
+            {t('createManagerAccount')}
           </h1>
           <p style={{ color: 'var(--text-tertiary)', fontSize: '15px' }}>
-            Manage your branch operations efficiently
+            {t('managerSignupSubtitle')}
           </p>
         </div>
 
@@ -138,7 +138,7 @@ export default function BranchManagerSignupPage() {
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div className="form-group">
             <label className="form-label" style={{ marginBottom: '8px', display: 'block', fontWeight: 600 }}>
-              Full Name
+              {t('name')}
             </label>
             <input
               type="text"
@@ -146,16 +146,16 @@ export default function BranchManagerSignupPage() {
               className="form-input"
               value={formData.name}
               onChange={handleChange}
-              placeholder="Manager Name"
+              placeholder={t('managerName')}
               required
               disabled={loading}
-              style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none' }}
+              style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none', background: 'var(--bg-card)', color: 'var(--text-primary)' }}
             />
           </div>
 
           <div className="form-group">
             <label className="form-label" style={{ marginBottom: '8px', display: 'block', fontWeight: 600 }}>
-              Work Email Address
+              {t('workEmailAddress')}
             </label>
             <input
               type="email"
@@ -166,13 +166,13 @@ export default function BranchManagerSignupPage() {
               placeholder="manager@simba.rw"
               required
               disabled={loading}
-              style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none' }}
+              style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none', background: 'var(--bg-card)', color: 'var(--text-primary)' }}
             />
           </div>
 
           <div className="form-group">
             <label className="form-label" style={{ marginBottom: '8px', display: 'block', fontWeight: 600 }}>
-              Select Your Branch
+              {t('selectYourBranch')}
             </label>
             <select
               name="branch"
@@ -183,16 +183,16 @@ export default function BranchManagerSignupPage() {
               disabled={loading}
               style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none', background: 'var(--bg-card)', color: 'var(--text-primary)' }}
             >
-              <option value="">Choose a branch to manage</option>
+              <option value="">{t('chooseBranchToManage')}</option>
               {BRANCHES.map(branch => (
-                <option key={branch} value={branch}>{branch}</option>
+                <option key={branch} value={branch}>{branch === 'Main Branch' ? t('mainBranch') : branch}</option>
               ))}
             </select>
           </div>
 
           <div className="form-group">
             <label className="form-label" style={{ marginBottom: '8px', display: 'block', fontWeight: 600 }}>
-              Password
+              {t('password')}
             </label>
             <input
               type="password"
@@ -203,7 +203,7 @@ export default function BranchManagerSignupPage() {
               placeholder="••••••••"
               required
               disabled={loading}
-              style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none' }}
+              style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none', background: 'var(--bg-card)', color: 'var(--text-primary)' }}
             />
           </div>
           
@@ -226,12 +226,12 @@ export default function BranchManagerSignupPage() {
               cursor: loading ? 'not-allowed' : 'pointer'
             }}
           >
-            {loading ? <span className="spinner" style={{ width: '20px', height: '20px' }} /> : 'Sign Up as Manager ➜'}
+            {loading ? <span className="spinner" style={{ width: '20px', height: '20px' }} /> : (t('signUpAsManager') + ' ➜')}
           </button>
         </form>
 
         <p style={{ textAlign: 'center', marginTop: '32px', color: 'var(--text-secondary)', fontSize: '15px' }}>
-          Already have an account? <Link to="/login" style={{ color: 'var(--primary)', fontWeight: 700 }}>Sign In</Link>
+          {t('haveAccount')} <Link to="/login" style={{ color: 'var(--primary)', fontWeight: 700 }}>{t('login')}</Link>
         </p>
       </div>
     </div>

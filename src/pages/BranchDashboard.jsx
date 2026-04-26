@@ -576,7 +576,7 @@ export default function BranchDashboard({ products: initialProducts, categories 
                              <div style={{ width: '64px', height: '64px', borderRadius: '20px', background: 'var(--bg-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                <Icon name="file" size={32} style={{ opacity: 0.2 }} />
                              </div>
-                             <div style={{ fontWeight: 600 }}>{isBranchStaff ? 'No orders assigned to you yet.' : 'No orders found for this branch.'}</div>
+                             <div style={{ fontWeight: 600 }}>{isBranchStaff ? t('noAssignedOrders') : t('noOrdersFound')}</div>
                           </div>
                         </td>
                       </tr>
@@ -619,11 +619,11 @@ export default function BranchDashboard({ products: initialProducts, categories 
                                 <select 
                                   value={order.assigned_to || ''} 
                                   onChange={(e) => assignOrder(order.id, e.target.value)}
-                                  style={{ padding: '8px 12px', borderRadius: '10px', border: '1px solid var(--border-color)', background: 'var(--bg-primary)', cursor: 'pointer', fontSize: '13px', fontWeight: 500 }}
+                                  style={{ padding: '8px 12px', borderRadius: '10px', border: '1px solid var(--border-color)', background: 'var(--bg-primary)', color: 'var(--text-primary)', cursor: 'pointer', fontSize: '13px', fontWeight: 500 }}
                                 >
-                                  <option value="">Unassigned</option>
+                                  <option value="" style={{ background: 'var(--bg-primary)', color: 'var(--text-primary)' }}>{t('unassigned')}</option>
                                   {branchStaff.map(staff => (
-                                    <option key={staff.id} value={staff.id}>{staff.full_name}</option>
+                                    <option key={staff.id} value={staff.id} style={{ background: 'var(--bg-primary)', color: 'var(--text-primary)' }}>{staff.full_name}</option>
                                   ))}
                                 </select>
                               </td>
@@ -653,14 +653,14 @@ export default function BranchDashboard({ products: initialProducts, categories 
                                       <button 
                                         onClick={() => updateOrderStatus(order.id, 'ready')}
                                         style={{ padding: '8px 14px', background: 'var(--primary)', color: 'white', borderRadius: '10px', fontSize: '12px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s', border: 'none' }}
-                                      >Mark Ready</button>
+                                      >{t('markReady')}</button>
                                     )}
                                     {order.status === 'ready' && (
                                       <button 
                                         className="confirm-pickup-btn"
                                         onClick={() => confirmPickup(order.id, order.order_number)}
                                         style={{ padding: '8px 14px', background: 'var(--accent-emerald)', color: 'white', borderRadius: '10px', fontSize: '12px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s', border: 'none', boxShadow: '0 4px 12px rgba(16, 185, 129, 0.25)' }}
-                                      >✓ Confirm Pickup</button>
+                                      >✓ {t('confirmPickupLabel')}</button>
                                     )}
                                   </>
                                 ) : (
@@ -668,27 +668,27 @@ export default function BranchDashboard({ products: initialProducts, categories 
                                     <select 
                                       value={order.status} 
                                       onChange={(e) => updateOrderStatus(order.id, e.target.value)}
-                                      style={{ padding: '8px 12px', borderRadius: '10px', border: '1px solid var(--border-color)', background: 'var(--bg-primary)', cursor: 'pointer', fontWeight: 600, fontSize: '13px' }}
+                                      style={{ padding: '8px 12px', borderRadius: '10px', border: '1px solid var(--border-color)', background: 'var(--bg-primary)', color: 'var(--text-primary)', cursor: 'pointer', fontWeight: 600, fontSize: '13px' }}
                                     >
-                                      <option value="pending">{t('pending')}</option>
-                                      <option value="processing">{t('preparing')}</option>
-                                      <option value="ready">{t('readyForPickup')}</option>
-                                      <option value="completed">{t('completed')}</option>
-                                      <option value="cancelled">{t('cancelled')}</option>
+                                      <option value="pending" style={{ background: 'var(--bg-primary)', color: 'var(--text-primary)' }}>{t('pending')}</option>
+                                      <option value="processing" style={{ background: 'var(--bg-primary)', color: 'var(--text-primary)' }}>{t('preparing')}</option>
+                                      <option value="ready" style={{ background: 'var(--bg-primary)', color: 'var(--text-primary)' }}>{t('readyForPickup')}</option>
+                                      <option value="completed" style={{ background: 'var(--bg-primary)', color: 'var(--text-primary)' }}>{t('completed')}</option>
+                                      <option value="cancelled" style={{ background: 'var(--bg-primary)', color: 'var(--text-primary)' }}>{t('cancelled')}</option>
                                     </select>
                                     {order.status === 'ready' && (
                                       <button 
                                         className="confirm-pickup-btn"
                                         onClick={() => confirmPickup(order.id, order.order_number)}
                                         style={{ padding: '8px 14px', background: '#10b981', color: 'white', borderRadius: '10px', fontSize: '12px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s', border: 'none', boxShadow: '0 4px 12px rgba(16, 185, 129, 0.25)', animation: 'pulseGlow 2s infinite' }}
-                                      >✓ Confirm Pickup</button>
+                                      >✓ {t('confirmPickupLabel')}</button>
                                     )}
                                     {order.status === 'ready' && (
                                       <button
                                         className="flag-btn"
                                         onClick={() => flagCustomer(order.customer_id, order.order_number)}
                                         style={{ padding: '8px 12px', background: 'rgba(239, 68, 68, 0.08)', color: '#ef4444', borderRadius: '10px', fontSize: '11px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s', border: '1px solid rgba(239, 68, 68, 0.15)' }}
-                                      >⚑ No-Show</button>
+                                      >⚑ {t('noShowLabel')}</button>
                                     )}
                                     {order.status === 'completed' && order.picked_up_at && (
                                       <span style={{ fontSize: '11px', color: '#10b981', fontWeight: 600 }}>

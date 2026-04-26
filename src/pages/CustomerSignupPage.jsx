@@ -31,11 +31,11 @@ export default function CustomerSignupPage() {
       if (signupError) {
         setError(signupError);
       } else {
-        alert('Check your email for a confirmation link!');
+        alert(t('checkEmailConfirmation'));
         navigate('/login');
       }
     } catch (err) {
-      setError('An unexpected error occurred. Please try again.');
+      setError(t('unexpectedError'));
     } finally {
       setLoading(false);
     }
@@ -78,10 +78,10 @@ export default function CustomerSignupPage() {
             🛒
           </div>
           <h1 style={{ fontSize: '28px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '8px' }}>
-            Customer Sign Up
+            {t('signUpAsCustomer')}
           </h1>
           <p style={{ color: 'var(--text-tertiary)', fontSize: '15px' }}>
-            Start your fresh shopping journey with Simba
+            {t('startFreshJourney')}
           </p>
         </div>
 
@@ -103,7 +103,7 @@ export default function CustomerSignupPage() {
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div className="form-group">
             <label className="form-label" style={{ marginBottom: '8px', display: 'block', fontWeight: 600 }}>
-              Full Name
+              {t('name')}
             </label>
             <input
               type="text"
@@ -114,13 +114,13 @@ export default function CustomerSignupPage() {
               placeholder="John Doe"
               required
               disabled={loading}
-              style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none' }}
+              style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none', background: 'var(--bg-card)', color: 'var(--text-primary)' }}
             />
           </div>
 
           <div className="form-group">
             <label className="form-label" style={{ marginBottom: '8px', display: 'block', fontWeight: 600 }}>
-              Email Address
+              {t('email')}
             </label>
             <input
               type="email"
@@ -131,13 +131,13 @@ export default function CustomerSignupPage() {
               placeholder="name@example.com"
               required
               disabled={loading}
-              style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none' }}
+              style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none', background: 'var(--bg-card)', color: 'var(--text-primary)' }}
             />
           </div>
 
           <div className="form-group">
             <label className="form-label" style={{ marginBottom: '8px', display: 'block', fontWeight: 600 }}>
-              Password
+              {t('password')}
             </label>
             <input
               type="password"
@@ -148,7 +148,7 @@ export default function CustomerSignupPage() {
               placeholder="••••••••"
               required
               disabled={loading}
-              style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none' }}
+              style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none', background: 'var(--bg-card)', color: 'var(--text-primary)' }}
             />
           </div>
           
@@ -171,12 +171,12 @@ export default function CustomerSignupPage() {
               cursor: loading ? 'not-allowed' : 'pointer'
             }}
           >
-            {loading ? <span className="spinner" style={{ width: '20px', height: '20px' }} /> : 'Sign Up as Customer ➜'}
+            {loading ? <span className="spinner" style={{ width: '20px', height: '20px' }} /> : (t('signUpAsCustomer') + ' ➜')}
           </button>
         </form>
 
         <p style={{ textAlign: 'center', marginTop: '32px', color: 'var(--text-secondary)', fontSize: '15px' }}>
-          Already have an account? <Link to="/login" style={{ color: 'var(--primary)', fontWeight: 700 }}>Sign In</Link>
+          {t('haveAccount')} <Link to="/login" style={{ color: 'var(--primary)', fontWeight: 700 }}>{t('login')}</Link>
         </p>
       </div>
     </div>

@@ -71,11 +71,11 @@ export default function SignupPage() {
         setError(signupError);
       } else {
         // Successful signup usually requires email confirmation with Supabase default settings
-        alert('Check your email for a confirmation link!');
+        alert(t('checkEmailConfirmation'));
         navigate('/login');
       }
     } catch (err) {
-      setError('An unexpected error occurred. Please try again later.');
+      setError(t('unexpectedError'));
     } finally {
       setLoading(false);
     }
