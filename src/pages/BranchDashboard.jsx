@@ -325,7 +325,6 @@ export default function BranchDashboard({ products: initialProducts, categories 
   }
 
   return (
-  return (
     <div className="dashboard-container" style={{ 
       display: 'flex', 
       minHeight: '100vh', 
