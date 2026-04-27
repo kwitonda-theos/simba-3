@@ -17,11 +17,11 @@ export default function Hero() {
             </Link>
             <div className="hero-stats" style={{ justifyContent: 'center', width: '100%', gap: 'clamp(20px, 5vw, 60px)' }}>
               <div className="hero-stat">
-                <div className="hero-stat-value" style={{ fontSize: 'clamp(20px, 4vw, 32px)' }}>552+</div>
+                <div className="hero-stat-value" style={{ fontSize: 'clamp(20px, 4vw, 32px)' }}>789+</div>
                 <div className="hero-stat-label">{t('heroProducts')}</div>
               </div>
               <div className="hero-stat">
-                <div className="hero-stat-value" style={{ fontSize: 'clamp(20px, 4vw, 32px)' }}>9</div>
+                <div className="hero-stat-value" style={{ fontSize: 'clamp(20px, 4vw, 32px)' }}>10</div>
                 <div className="hero-stat-label">{t('heroCategories')}</div>
               </div>
               <div className="hero-stat">

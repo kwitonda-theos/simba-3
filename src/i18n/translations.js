@@ -15,7 +15,7 @@ export const translations = {
     // Hero
     heroBadge: "🛒 Rwanda's #1 Online Supermarket",
     heroTitle: "Fresh Groceries Ready for Pickup",
-    heroSubtitle: "Shop from 552+ products across 9 categories. Pick up from any branch in Kigali.",
+    heroSubtitle: "Shop from 789+ products across 10 categories. Pick up from any branch in Kigali.",
     heroCta: "Shop Now",
     heroProducts: "Products",
     heroCategories: "Categories",
@@ -52,8 +52,11 @@ export const translations = {
     'General': "General",
     'Cleaning & Sanitary': "Cleaning & Sanitary",
     'Sports & Fitness': "Sports & Fitness",
+    'Sports & Wellness': "Sports & Wellness",
     'Stationery': "Stationery",
     'Baby Products': "Baby Products",
+    'Kitchen Storage': "Kitchen Storage",
+    'Pet Care': "Pet Care",
 
     // Filters
     filters: "Filters",
@@ -217,6 +220,9 @@ export const translations = {
     staffName: "Staff Name",
     managerName: "Manager Name",
     chooseBranchToManage: "Choose a branch to manage",
+    change: "Change",
+    notSelected: "Not Selected",
+    selectBranchWelcome: "Welcome to Simba. Please select a branch near you to start shopping.",
 
     // My Orders
     noOrders: "No orders yet",
@@ -305,7 +311,7 @@ export const translations = {
     // Hero
     heroBadge: "🛒 Le Supermarché en ligne #1 du Rwanda",
     heroTitle: "Des Produits Frais Prêts pour le Retrait",
-    heroSubtitle: "Faites vos courses parmi 552+ produits dans 9 catégories. Retrait dans n'importe quelle succursale à Kigali.",
+    heroSubtitle: "Faites vos courses parmi 789+ produits dans 10 catégories. Retrait dans n'importe quelle succursale à Kigali.",
     heroCta: "Acheter Maintenant",
     heroProducts: "Produits",
     heroCategories: "Catégories",
@@ -342,8 +348,11 @@ export const translations = {
     'General': "Général",
     'Cleaning & Sanitary': "Nettoyage et Sanitaire",
     'Sports & Fitness': "Sports et Fitness",
+    'Sports & Wellness': "Sports et Bien-être",
     'Stationery': "Papeterie",
     'Baby Products': "Produits pour Bébés",
+    'Kitchen Storage': "Rangement de Cuisine",
+    'Pet Care': "Soins des Animaux",
 
     // Filters
     filters: "Filtres",
@@ -507,6 +516,9 @@ export const translations = {
     staffName: "Nom du personnel",
     managerName: "Nom du gestionnaire",
     chooseBranchToManage: "Choisissez une succursale à gérer",
+    change: "Changer",
+    notSelected: "Non sélectionné",
+    selectBranchWelcome: "Bienvenue chez Simba. Veuillez sélectionner une succursale près de chez vous pour commencer vos achats.",
 
     // My Orders
     noOrders: "Pas encore de commandes",
@@ -595,7 +607,7 @@ export const translations = {
     // Hero
     heroBadge: "🛒 Isoko ya #1 ku rubuga rwa interineti mu Rwanda",
     heroTitle: "Ibicuruzwa Bishya Bitereye Gufatwa",
-    heroSubtitle: "Gura mu bicuruzwa 552+ mu byiciro 9. Fata ibyo waguze ku ishami rya Simba iryo ariryo ryose muri Kigali.",
+    heroSubtitle: "Gura mu bicuruzwa 789+ mu byiciro 10. Fata ibyo waguze ku ishami rya Simba iryo ariryo ryose muri Kigali.",
     heroCta: "Gura Nonaha",
     heroProducts: "Ibicuruzwa",
     heroCategories: "Ibyiciro",
@@ -632,8 +644,11 @@ export const translations = {
     'General': "Ibisanzwe",
     'Cleaning & Sanitary': "Ibikoresho by'Isuku",
     'Sports & Fitness': "Siporo n'Imyitozo",
+    'Sports & Wellness': "Siporo n'Ubuzima",
     'Stationery': "Ibikoresho by'Ishuri",
     'Baby Products': "Ibikoresho by'Abana",
+    'Kitchen Storage': "Ibikoresho by'Igikoni",
+    'Pet Care': "Ibikoresho by'Amatungo",
 
     // Filters
     filters: "Amasesengura",
@@ -797,6 +812,9 @@ export const translations = {
     staffName: "Izina ry'umukozi",
     managerName: "Izina ry'umuyobozi",
     chooseBranchToManage: "Hitamo ishami ugiye kuyobora",
+    change: "Guhindura",
+    notSelected: "Ntabwo byatoranyijwe",
+    selectBranchWelcome: "Murakaza neza kuri Simba. Nyamuneka hitamo ishami rikwegereye kugira ngo utangire guhaha.",
 
     // My Orders
     noOrders: "Nta byo waguze biraboneka",

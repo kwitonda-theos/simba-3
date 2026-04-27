@@ -4,15 +4,17 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
+import { useBranch } from '../context/BranchContext';
 import Icon from './Icon';
 
 export default function Header({ onSearch }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { getCartCount, setIsCartOpen } = useCart();
+  const { getCartCount, setIsCartOpen, clearCart } = useCart();
   const { isAuthenticated, user, logout, isBranchManager } = useAuth();
   const { language, setLanguage, t } = useLanguage();
   const { theme, toggleTheme } = useTheme();
+  const { selectedBranch, selectBranch } = useBranch();
   const navigate = useNavigate();
   const cartCount = getCartCount();
 
@@ -34,11 +36,38 @@ export default function Header({ onSearch }) {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
+  const handleChangeBranch = () => {
+    if (window.confirm('Changing branch will clear your current cart. Continue?')) {
+      clearCart();
+      selectBranch(null);
+    }
+  };
+
   return (
     <header className="header" id="site-header">
       <div className="container">
         <div className="header-top">
-          <span><Icon name="mapPin" size={14} style={{ marginRight: '4px' }} /> {t('kigali')} | {t('freeDelivery')}</span>
+          <div className="branch-indicator" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span><Icon name="mapPin" size={14} style={{ marginRight: '4px' }} /> {selectedBranch ? selectedBranch.name : t('kigali')}</span>
+            {selectedBranch && (
+              <button 
+                onClick={handleChangeBranch}
+                className="change-branch-btn"
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--accent-gold)',
+                  fontSize: '11px',
+                  fontWeight: '600',
+                  textDecoration: 'underline',
+                  cursor: 'pointer',
+                  padding: 0
+                }}
+              >
+                {t('change')}
+              </button>
+            )}
+          </div>
           <div className="header-top-actions">
             <div className="lang-switcher" id="language-switcher">
               <button
@@ -164,6 +193,14 @@ export default function Header({ onSearch }) {
             </div>
 
             <nav className="mobile-nav">
+              <div style={{ padding: '0 20px 20px', borderBottom: '1px solid var(--border-light)' }}>
+                <div style={{ fontSize: '12px', color: 'var(--text-tertiary)', marginBottom: '4px' }}>{t('branch')}:</div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span style={{ fontWeight: 600 }}>{selectedBranch ? selectedBranch.name : t('notSelected')}</span>
+                  <button onClick={() => { handleChangeBranch(); setIsMobileMenuOpen(false); }} style={{ color: 'var(--accent-gold)', fontSize: '12px', fontWeight: 600, border: 'none', background: 'none' }}>{t('change')}</button>
+                </div>
+              </div>
+
               {isAuthenticated ? (
                 <>
                   <div className="mobile-user-info">
@@ -199,4 +236,5 @@ export default function Header({ onSearch }) {
     </header>
   );
 }
+
 

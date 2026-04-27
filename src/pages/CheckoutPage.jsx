@@ -3,6 +3,7 @@ import { Link, useNavigate, Navigate, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
+import { useBranch } from '../context/BranchContext';
 import { supabase } from '../lib/supabase';
 import { formatPrice, generateOrderNumber } from '../utils/helpers';
 import Icon from '../components/Icon';
@@ -11,6 +12,7 @@ export default function CheckoutPage() {
   const { cart, getCartTotal, clearCart } = useCart();
   const { isAuthenticated, user } = useAuth();
   const { t } = useLanguage();
+  const { selectedBranch: contextBranch } = useBranch();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -19,7 +21,7 @@ export default function CheckoutPage() {
     lastName: user?.name?.split(' ')[1] || '',
     email: user?.email || '',
     phone: '',
-    pickupBranch: '',
+    pickupBranch: contextBranch?.name || '',
     pickupTime: '',
     notes: '',
     paymentMethod: 'momo_mtn',
@@ -64,12 +66,18 @@ export default function CheckoutPage() {
     fetchData();
   }, [user]);
 
+  useEffect(() => {
+    if (contextBranch && !formData.pickupBranch) {
+      setFormData(prev => ({ ...prev, pickupBranch: contextBranch.name }));
+    }
+  }, [contextBranch]);
+
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   const total = getCartTotal();
-  const depositAmount = userFlags >= 2 ? 2000 : 500; // Increased deposit for problematic users
+  const depositAmount = userFlags >= 2 ? 2000 : 500;
 
   const handleChange = (e) => {
     setFormData(prev => ({
@@ -80,7 +88,10 @@ export default function CheckoutPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.pickupBranch || !formData.pickupTime) {
+    
+    const targetBranch = contextBranch || branches.find(b => b.name === formData.pickupBranch);
+    
+    if (!targetBranch || !formData.pickupTime) {
       alert('Please select a pickup branch and time.');
       return;
     }
@@ -89,11 +100,7 @@ export default function CheckoutPage() {
 
     try {
       const number = generateOrderNumber();
-      const selectedBranch = branches.find(b => b.name === formData.pickupBranch);
       
-      if (!selectedBranch) throw new Error('Branch not found');
-
-      // 0. Ensure Profile Exists
       const { data: profile } = await supabase
         .from('profiles')
         .select('id')
@@ -108,19 +115,18 @@ export default function CheckoutPage() {
         });
       }
 
-      // 1. Insert Order with pickup details and deposit
       const { data: orderData, error: orderError } = await supabase
         .from('orders')
         .insert({
           order_number: number,
           customer_id: user.id,
-          branch_id: selectedBranch.id,
+          branch_id: targetBranch.id,
           total_amount: total + depositAmount,
           deposit_amount: depositAmount,
           pickup_time: formData.pickupTime,
           status: 'pending',
           contact_phone: formData.phone,
-          delivery_address: `Pickup at ${formData.pickupBranch}`,
+          delivery_address: `Pickup at ${targetBranch.name}`,
           delivery_notes: formData.notes,
           payment_method: formData.paymentMethod,
         })
@@ -129,7 +135,6 @@ export default function CheckoutPage() {
 
       if (orderError) throw orderError;
 
-      // 2. Insert Order Items AND Decrease Stock
       const orderItems = [];
       
       for (const item of cart) {
@@ -140,13 +145,10 @@ export default function CheckoutPage() {
           price_at_purchase: item.price
         });
 
-        // DECREASE STOCK PER BRANCH
-        // We use an RPC or a manual update. Since we don't have an RPC for atomic decrement, 
-        // we fetch current stock and update.
         const { data: invItem } = await supabase
           .from('inventory')
           .select('id, stock_quantity')
-          .eq('branch_id', selectedBranch.id)
+          .eq('branch_id', targetBranch.id)
           .eq('product_id', item.id)
           .maybeSingle();
 
@@ -208,7 +210,7 @@ export default function CheckoutPage() {
     padding: '14px 18px', 
     borderRadius: '14px', 
     border: '1.5px solid var(--border-color)', 
-    background: 'var(--bg-primary)', // Standardized input color
+    background: 'var(--bg-primary)',
     color: 'var(--text-primary)',
     fontSize: '15px',
     outline: 'none',
@@ -225,7 +227,6 @@ export default function CheckoutPage() {
 
         <form onSubmit={handleSubmit} className="checkout-grid">
           <div className="checkout-main">
-            {/* Pickup Details Section */}
             <div className="checkout-form-section" style={{ background: 'var(--bg-card)', padding: '32px', borderRadius: '24px', border: '1px solid var(--border-color)', marginBottom: '32px' }}>
               <div className="checkout-section-header" style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
                 <div style={{ width: '32px', height: '32px', background: 'var(--primary)', color: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>1</div>
@@ -254,14 +255,23 @@ export default function CheckoutPage() {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '24px', marginTop: '24px' }}>
                 <div className="form-group">
                   <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, fontSize: '14px', color: 'var(--text-secondary)' }}>{t('pickupBranch')}</label>
-                  <select required name="pickupBranch" value={formData.pickupBranch} onChange={handleChange} style={inputStyle} className="checkout-input">
-                    <option value="">{t('selectBranchForPickup')}</option>
+                  <select 
+                    required 
+                    name="pickupBranch" 
+                    value={formData.pickupBranch} 
+                    onChange={handleChange} 
+                    style={inputStyle} 
+                    className="checkout-input"
+                    disabled={!!contextBranch}
+                  >
+                    {!contextBranch && <option value="">{t('selectBranchForPickup')}</option>}
                     {branches.map(branch => (
                       <option key={branch.id} value={branch.name}>
                         {branch.name} {branch.avgRating ? `(⭐ ${branch.avgRating})` : ''}
                       </option>
                     ))}
                   </select>
+                  {contextBranch && <p style={{ fontSize: '12px', color: 'var(--text-tertiary)', marginTop: '4px' }}>Pickup is restricted to the branch you shopped at.</p>}
                 </div>
                 <div className="form-group">
                   <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, fontSize: '14px', color: 'var(--text-secondary)' }}>{t('pickupTime')}</label>
@@ -270,7 +280,6 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            {/* High Deposit Warning */}
             {userFlags >= 2 && (
               <div style={{ 
                 padding: '24px', 
@@ -295,7 +304,6 @@ export default function CheckoutPage() {
               </div>
             )}
 
-            {/* MoMo Deposit Banner */}
             <div style={{ 
               padding: '24px', 
               background: 'linear-gradient(135deg, var(--primary-glow) 0%, rgba(255, 107, 0, 0.05) 100%)', 
@@ -315,7 +323,6 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            {/* Payment Section */}
             <div className="checkout-form-section" style={{ background: 'var(--bg-card)', padding: '32px', borderRadius: '24px', border: '1px solid var(--border-color)', marginBottom: '32px' }}>
               <div className="checkout-section-header" style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
                 <div style={{ width: '32px', height: '32px', background: 'var(--primary)', color: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>2</div>

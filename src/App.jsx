@@ -4,6 +4,7 @@ import { CartProvider } from './context/CartContext';
 import { LanguageProvider } from './context/LanguageContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { BranchProvider, useBranch } from './context/BranchContext';
 import { supabase } from './lib/supabase';
 import Header from './components/Header';
 import CartDrawer from './components/CartDrawer';
@@ -22,6 +23,7 @@ import BranchManagerSignupPage from './pages/BranchManagerSignupPage';
 import BranchStaffSignupPage from './pages/BranchStaffSignupPage';
 import BranchDashboard from './pages/BranchDashboard';
 import MyOrdersPage from './pages/MyOrdersPage';
+import BranchSelector from './components/BranchSelector';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -59,72 +61,73 @@ function AppContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { user, loading: authLoading } = useAuth();
+  const { selectedBranch } = useBranch();
 
   const isStaff = useMemo(() => {
     const role = user?.role || user?.user_metadata?.role;
-    console.log('Current User Role:', role);
     return role === 'branch_manager' || role === 'branch-manager' || role === 'branch_staff' || role === 'branch-staff';
   }, [user]);
 
   useEffect(() => {
     const fetchProducts = async () => {
+      // For staff, we might want to show all products or just branch products.
+      // For now, let's keep the logic for branch products if a branch is selected.
+      if (!selectedBranch && !isStaff) {
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
-        console.log('Fetching products from Supabase and JSON...');
+        console.log('Fetching branch products...');
 
-        // 1. Fetch from Supabase
-        const { data: sbData, error: sbError } = await supabase
-          .from('products')
-          .select('*');
+        let query;
+        if (selectedBranch) {
+          // Fetch products joined with inventory for the selected branch
+          query = supabase
+            .from('inventory')
+            .select(`
+              stock_quantity,
+              products (*)
+            `)
+            .eq('branch_id', selectedBranch.id);
+        } else {
+          // Fallback for staff/admin if no branch selected
+          query = supabase.from('products').select('*');
+        }
+
+        const { data: invData, error: sbError } = await query;
 
         if (sbError) throw sbError;
 
-        // 2. Fetch from JSON to get inStock info
-        const response = await fetch('/simba_products (1).json');
-        const localData = await response.json();
-        const jsonProducts = localData.products || [];
-
-        // Create a map for quick lookup
-        const inStockMap = jsonProducts.reduce((acc, p) => {
-          acc[p.id] = p.inStock;
-          return acc;
-        }, {});
-
-        if (!sbData || sbData.length === 0) {
-          console.warn('No products found in Supabase, using local JSON data.');
-          setProducts(jsonProducts.map(p => ({
-            ...p,
-            image: p.image || 'https://placehold.co/300x300?text=' + encodeURIComponent(p.name)
-          })));
-        } else {
-          // Merge Supabase data with inStock info from JSON
-          const mappedProducts = sbData.map(p => ({
-            ...p,
-            image: p.image_url || 'https://placehold.co/300x300?text=' + encodeURIComponent(p.name),
-            inStock: inStockMap[p.id] !== undefined ? inStockMap[p.id] : true // Default to true if not in JSON
+        let mappedProducts = [];
+        if (selectedBranch) {
+          mappedProducts = invData.map(item => ({
+            ...item.products,
+            stock: item.stock_quantity,
+            inStock: item.stock_quantity > 0,
+            image: item.products.image_url || 'https://placehold.co/300x300?text=' + encodeURIComponent(item.products.name)
           }));
-          setProducts(mappedProducts);
-          console.log(`Loaded ${mappedProducts.length} products with stock status.`);
+        } else {
+          mappedProducts = (invData || []).map(p => ({
+            ...p,
+            stock: 99, // Dummy for staff
+            inStock: true,
+            image: p.image_url || 'https://placehold.co/300x300?text=' + encodeURIComponent(p.name)
+          }));
         }
+
+        setProducts(mappedProducts);
       } catch (err) {
         console.error('Data loading error:', err.message);
-        try {
-          const response = await fetch('/simba_products (1).json');
-          const localData = await response.json();
-          setProducts((localData.products || []).map(p => ({
-            ...p,
-            image: p.image || 'https://placehold.co/300x300?text=' + encodeURIComponent(p.name)
-          })));
-        } catch (fallbackErr) {
-          setError('Failed to load products. Please check your connection.');
-        }
+        setError('Failed to load products. Please check your connection.');
       } finally {
         setLoading(false);
       }
     };
 
     fetchProducts();
-  }, []);
+  }, [selectedBranch, isStaff]);
 
   const categories = useMemo(() => {
     if (!products.length) return [];
@@ -230,12 +233,15 @@ export default function App() {
       <ThemeProvider>
         <LanguageProvider>
           <AuthProvider>
-            <CartProvider>
-              <AppContent />
-            </CartProvider>
+            <BranchProvider>
+              <CartProvider>
+                <AppContent />
+              </CartProvider>
+            </BranchProvider>
           </AuthProvider>
         </LanguageProvider>
       </ThemeProvider>
     </BrowserRouter>
   );
 }
+

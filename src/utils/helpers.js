@@ -36,8 +36,11 @@ export function getCategoryIcon(category) {
     'General': '📦',
     'Cleaning & Sanitary': '🧹',
     'Sports & Fitness': '🏋️',
+    'Sports & Wellness': '🧘',
     'Stationery': '📝',
     'Baby Products': '🍼',
+    'Kitchen Storage': '🍱',
+    'Pet Care': '🐾',
   };
   return icons[category] || '📦';
 }
@@ -51,8 +54,11 @@ export function getCategoryImage(category) {
     'General': 'https://images.unsplash.com/photo-1604719312566-8912e9227c6a?w=400&h=300&fit=crop',
     'Cleaning & Sanitary': 'https://images.unsplash.com/photo-1585421514284-efb74c2b69ba?w=400&h=300&fit=crop',
     'Sports & Fitness': 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop',
+    'Sports & Wellness': 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=300&fit=crop',
     'Stationery': 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=400&h=300&fit=crop',
     'Baby Products': 'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=400&h=300&fit=crop',
+    'Kitchen Storage': 'https://images.unsplash.com/photo-1590794056226-79ef3a8147e1?w=400&h=300&fit=crop',
+    'Pet Care': 'https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?w=400&h=300&fit=crop',
   };
   return images[category] || images['General'];
 }
